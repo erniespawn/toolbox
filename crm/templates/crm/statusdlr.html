@@ -1,0 +1,60 @@
+{% load static %}
+<link href="{% static 'crm/css/main.css' %}" rel="stylesheet">
+
+<br>
+
+<div class="row">
+	<div class="col">
+		<div class="col-md">
+			<div class="card text-center text-white  mb-3" id="total_dlr_count">
+			  	<div class="card-header">
+			  		<h5 class="card-title">Total missing DLRs</h5>
+			  	</div>
+			  	<div class="card-body">
+					<h3 class="card-title"></h3>
+					<th>
+						<td>
+							<h2>   {{ total_dlr_count }}   </h2>	
+						</td>
+					</th>
+			  	</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col">
+		<div class="col-md">
+			<div class="card text-center text-white  mb-3" id="total_sg_count">
+			  	<div class="card-header">
+			  		<h5 class="card-title">Total missing DLRs SG</h5>
+			  	</div>
+			  	<div class="card-body">
+					<h3 class="card-title"></h3>
+					<th>
+							<td>
+								<h2>   {{ total_sg_count }}   </h2>	
+							</td>
+						</th>
+			  	</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col">
+		<div class="col-md">
+			<div class="card text-center text-white  mb-3" id="total_dbs_count">
+			  	<div class="card-header">
+			  		<h5 class="card-title">Total missing DLRs DBS Bank</h5>
+			  	</div>
+			  	<div class="card-body">
+			    	<h3 class="card-title"></h3>
+                    <th>
+                        <td>
+                            <h2>   {{ total_dbs_count }}   </h2>	
+                        </td>
+                    </th>
+			  	</div>
+			</div>
+		</div>
+	</div>
+</div>

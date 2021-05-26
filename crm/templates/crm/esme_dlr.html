@@ -1,0 +1,104 @@
+{% extends 'crm/base.html' %}
+{% block content %}
+
+{% include 'crm/statusdlr.html' %}
+
+
+<br>
+<form method='POST'> {% csrf_token %}
+    {{ form.as_p }}
+    <label for="dlr">Choose a date:</label>
+    <select name="date" id="dlr">
+        <option value="0">Current</option>
+        <option value="-1">One hour Ago</option>
+        <option value="examplefile">examplefile</option>
+    </select><br><br>
+
+    <label for="smsc">Choose a system:</label>
+    <select name="smsc" id="smsc">
+        <option value="smsc-1-eu1-prod">smsc-1-eu1-prod</option>
+        <option value="smsc-2-eu4-prod">smsc-2-eu1-prod</option>
+        <option value="smsc-1-eu4-prod">smsc-1-eu4-prod</option>
+        <option value="smsc-2-eu4-prod">smsc-2-eu4-prod</option>
+    </select><br><br>
+    <input type="submit" value="Run" />
+</form>
+
+<hr>
+<br>
+<br>
+
+<form class="" action="" method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input class="btn btn-large btn-primary" type="Submit" name="reset" value="Reset" />
+</form>
+
+
+
+<div class="row">
+    <div class="col-md-6">
+        <!-- <a >Total missing DLRs SG</a> -->
+        <hr>
+        <div class="card card-body">
+            <a class="btn btn-primary  btn-sm btn-block" id="total_sg_count" href="">Total missing DLRs SG</a>
+            <table class="table table-sm">
+                <tr>
+                    <th>Time</th>
+                    <th>MsIsdn</th>
+                    <th>MessageId</th>
+                    <th>SenderId</th>
+                    <th>System</th>
+                </tr>
+                {% for i in total_sg %}
+                <tr>
+                <tr>
+                    <td>{{ i.time}}</td>
+                    <td>{{ i.msisdn }}</td>
+                    <td>{{ i.messageid }}</td>
+                    <td>{{ i.senderid }}</td>
+                    <td>{{ i.system }}</td>
+                </tr>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <!-- <a >Total missing DLRs DBS Bank</a> -->
+        <hr>
+        <div class="card card-body">
+            <a class="btn btn-primary  btn-sm btn-block" id="total_dbs_count" href="">Total missing DLRs DBS Bank</a>
+            <table class="table table-sm">
+                <tr>
+                    <th>Time</th>
+                    <th>MsIsdn</th>
+                    <th>MessageId</th>
+                    <th>SenderId</th>
+                    <th>System</th>
+                </tr>
+                {% for i in total_dbs %}
+                <tr>
+                <tr>
+                    <td>{{ i.time}}</td>
+                    <td>{{ i.msisdn }}</td>
+                    <td>{{ i.messageid }}</td>
+                    <td>{{ i.senderid }}</td>
+                    <td>{{ i.system }}</td>
+                </tr>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+
+<br><br><br>
+
+<form method="get" action="../esme_dlr_view/">
+    <button type="submit">pictures</button>
+</form>
+
+<br>
+{% endblock  %}

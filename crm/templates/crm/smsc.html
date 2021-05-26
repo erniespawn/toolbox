@@ -1,0 +1,63 @@
+
+{% extends 'crm/base.html' %}
+
+
+{% block content %}
+
+
+{% include 'crm/status.html' %}
+
+
+<hr>
+<form class="" action="" method="POST">
+	{% csrf_token %}
+	{{ form.as_p }}
+	<input class="btn btn-large btn-primary" type="Submit" name="reset" value="Reset" />
+</form>
+
+<hr>
+<br>
+<br>
+
+
+
+<br>
+<form method='POST'> {% csrf_token %}
+		{{ form.as_p }} 
+	  <label for="cars">Choose a date:</label>
+	  <select name="date" id="cars">
+	    <option value="0">Current</option>
+	    <option value="-1">1 hour Ago</option>
+	    <option value="-2">1 hour Ago + Current</option>
+		<option value="examplefile">examplefile</option>
+	  </select><br><br>
+  
+
+	<label for="smsc">Choose a system:</label>
+	<select name="smsc" id="smsc">
+	<option value="smsc-1-eu1-prod">smsc-1-eu1-prod</option>
+	<option value="smsc-2-eu4-prod">smsc-2-eu1-prod</option>
+	<option value="smsc-1-eu4-prod">smsc-1-eu4-prod</option>
+	<option value="smsc-2-eu4-prod">smsc-2-eu4-prod</option>
+	</select><br><br>
+
+  <input type="submit" value="Run" />
+  
+</form>
+
+
+<hr>
+<form class="" action="" method="POST">
+	{% csrf_token %}
+	{{ form.as_p }}
+	<input class="btn btn-large btn-primary" type="Submit" name="insertDB" value="insertDB" />
+</form>
+
+<hr>
+<br>
+<br>
+
+
+
+
+{% endblock %}

@@ -1,0 +1,274 @@
+{% extends 'crm/base.html' %}
+<!-- {% load static %}
+<link href="{% static 'crm/css/main.css' %}" rel="stylesheet"> -->
+
+{% block content %}
+
+
+  {% include 'crm/status.html' %}
+  <br>
+ 
+
+  <div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-3" style="">Route 6994 GT 3197015001052 Concat SMS</div>
+    </div>
+</div>
+<br>
+<br>
+
+
+  <div class="row">
+      <div class="col-md-3">
+          <a >Success Percentage</a>
+          <hr>
+          <div class="card card-body">
+              <a class="btn btn-primary  btn-sm btn-block" id="suc-percentage"  href="">Total success</a>
+                <table class="table table-sm">
+                  <tr>
+                      <th>Time</th>
+                      <th>Total</th>
+                      <th>Success</th>
+                      <th>Failed</th>
+                      <th>Success Rate</th>
+                  </tr>
+                       {% for 1a in row1_1a %}
+                  <tr>
+                         <td>{{ 1a.time }}</td>  <td id='' value=''>{{ 1a.total }}</td>  <td id='' value=''>{{ 1a.success }}</td>    <td>{{ 1a.failed }}</td>  <td><span id=successPer_min0_smsc_2_eu4></span></td>
+                    </tr>
+                       {% endfor %}
+                </table>
+          </div>
+      </div>
+      
+      <div class="col-md-2">
+          <a>Primary smsc-2-eu4</a>
+          <hr>
+          <div class="card card-body">
+              <a class="btn btn-primary  btn-sm btn-block" id="sri-percentage" href="">SRI Failures </a>
+              <table class="table table-sm">
+                  <tr>
+                      <th>Time</th>
+                      <th>Timeout</th>
+                  </tr>
+                       {% for 1b in row1_1b %}
+                  <tr>
+                         <td>{{ 1b.time }}</td>  <td id='' value=''>{{ 1b.total }}</td>
+                    </tr>
+                       {% endfor %}
+              </table>
+          </div>
+      </div>
+      <div class="col-md-2">
+            <a>Primary smsc-2-eu4</a>
+            <hr>
+            <div class="card card-body">
+                <a class="btn btn-primary  btn-sm btn-block" id="row1-3" href="">MTFS Failures</a>
+                <table class="table table-sm">
+                    <tr>
+                        <th>Time</th>
+                        <th>Timeout</th>
+                        <th>Sys_Fail</th>
+                    </tr>
+                       {% for 1c in row1_1c %}
+                  <tr>
+                         <td>{{ 1c.time }}</td>  <td id='' value=''>{{ 1c.total }}</td> <td id='' value=''>{{ 1c.failed }}</td>
+                    </tr>
+                       {% endfor %}
+              </table>
+            </div>
+        </div>
+
+
+        <div class="col-md-2">
+                <a>Failover smsc-2-eu1</a>
+                <hr>
+                <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="row1-4" href="">SRI Failures</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Timeout</th>
+                         </tr>
+                       {% for 1d in row1_1d %}
+                  <tr>
+                         <td>{{ 1d.time }}</td>  <td id='' value=''>{{ 1d.total }}</td>
+                    </tr>
+                       {% endfor %}
+              </table>
+                </div>
+            </div>
+
+
+            <div class="col-md-2">
+                    <a>Failover smsc-2-eu1</a>
+                    <hr>
+                    <div class="card card-body">
+                        <a class="btn btn-primary  btn-sm btn-block" id="row1-5" href="">MTFS Failures</a>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Time</th>
+                                <th>Timeout</th>
+                                <th>Sys_Fail</th>
+                           </tr>
+                       {% for 1e in row1_1e %}
+                  <tr>
+                         <td>{{ 1e.time }}</td>  <td id='' value=''>{{ 1e.total }}</td> <td id='' value=''>{{ 1e.failed }}</td>
+                    </tr>
+                       {% endfor %}
+              </table>
+                    </div>
+                </div>
+  </div>
+  
+<hr>
+<br>
+<br>
+
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-3" style="">Route 6995 GT 3197015001050 Concat SMS</div>
+    </div>
+</div>
+
+<br>
+<div class="row">
+    <div class="col-md-3">
+        <a >Success Percentage</a>
+        <hr>
+        <div class="card card-body">
+            <a class="btn btn-primary  btn-sm btn-block" id="suc-percentage"  href="">Total success</a>
+            <table class="table table-sm">
+                <tr>
+                    <th>Time</th>
+                    <th>Total</th>
+                    <th>Success</th>
+                    <th>Failed</th>
+                    <th>Success Rate</th>
+               </tr>
+                       {% for 2a in row1_2a %}
+                  <tr>
+                         <td>{{ 2a.time }}</td>  <td id='' value=''>{{ 2a.total }}</td>  <td id='' value=''>{{ 2a.success }}</td>    <td>{{ 2a.failed }}</td>  <td><span id=successPer_min0_smsc_2_eu4></span></td>
+                    </tr>
+                       {% endfor %}
+              </table>
+        </div>
+    </div>
+    
+    <div class="col-md-2">
+        <a>Primary smsc-2-eu1</a>
+        <hr>
+        <div class="card card-body">
+            <a class="btn btn-primary  btn-sm btn-block" id="sri-percentage" href="">SRI Failures</a>
+            <table class="table table-sm">
+                <tr>
+                    <th>Time</th>
+                    <th>Timeout</th>
+                </tr>
+                       {% for 2b in row1_2b %}
+                  <tr>
+                         <td>{{ 2b.time }}</td>  <td id='' value=''>{{ 2b.total }}</td>
+                    </tr>
+                       {% endfor %}
+              </table>
+        </div>
+    </div>
+    <div class="col-md-2">
+          <a>Primary smsc-2-eu1</a>
+          <hr>
+          <div class="card card-body">
+              <a class="btn btn-primary  btn-sm btn-block" id="row1-3" href="">MTFS Failures</a>
+              <table class="table table-sm">
+                  <tr>
+                      <th>Time</th>
+                      <th>Timeout</th>
+                      <th>Sys_Fail</th>
+                  </tr>
+                       {% for 2c in row1_2c %}
+                  <tr>
+                         <td>{{ 2c.time }}</td>  <td id='' value=''>{{ 2c.total }}</td> <td id='' value=''>{{ 2c.failed }}</td>
+                    </tr>
+                       {% endfor %}
+              </table>
+          </div>
+      </div>
+
+
+      <div class="col-md-2">
+              <a>Failover smsc-2-eu4</a>
+              <hr>
+              <div class="card card-body">
+                  <a class="btn btn-primary  btn-sm btn-block" id="row1-4" href="">SRI Failures</a>
+                  <table class="table table-sm">
+                      <tr>
+                          <th>Time</th>
+                          <th>Timeout</th>
+                      </tr>
+                       {% for 2d in row1_2d %}
+                  <tr>
+                         <td>{{ 2d.time }}</td>  <td id='' value=''>{{ 2d.total }}</td>
+                    </tr>
+                       {% endfor %}
+              </table>
+              </div>
+          </div>
+
+
+          <div class="col-md-2">
+                  <a>Failover smsc-2-eu4</a>
+                  <hr>
+                  <div class="card card-body">
+                      <a class="btn btn-primary  btn-sm btn-block" id="row1-5" href="">MTFS Failures</a>
+                      <table class="table table-sm">
+                          <tr>
+                              <th>Time</th>
+                              <th>Timeout</th>
+                              <th>Sys_Fail</th>
+                          </tr>
+                       {% for 2e in row1_2e %}
+                  <tr>
+                         <td>{{ 2e.time }}</td>  <td id='' value=''>{{ 2e.total }}</td> <td id='' value=''>{{ 2e.failed }}</td>
+                    </tr>
+                       {% endfor %}
+              </table>
+                  </div>
+              </div>
+</div>
+
+<hr>
+<br>
+<br>
+
+
+
+
+
+
+<hr><br><br>
+Add some test data
+<hr>
+<form class="" action="" method="POST">
+	{% csrf_token %}
+	{{ form.as_p }}
+	<input class="btn btn-large btn-primary" type="Submit" name="insertFBdata" value="insertFBdata" />
+</form>
+
+<hr>
+<br>
+<br>
+
+
+
+
+
+
+
+
+
+
+
+{% include 'crm/jquery.html' %}
+
+    
+{% endblock  %}

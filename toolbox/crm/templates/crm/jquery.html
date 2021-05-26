@@ -1,0 +1,46 @@
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.js"></script> 
+
+
+    
+    <script type="text/javascript">
+    $(function() {
+    
+        $(document).ready(function () {
+  
+            var success_min0_smsc_2_eu4 = $('#success_min0_smsc_2_eu4')[0].innerText
+            var total_min0_smsc_2_eu4 = $('#total_min0_smsc_2_eu4')[0].innerText
+
+            var success_min1_smsc_2_eu4 = $('#success_min1_smsc_2_eu4')[0].innerText
+            var total_min1_smsc_2_eu4 = $('#total_min1_smsc_2_eu4')[0].innerText
+
+            var success_min2_smsc_2_eu4 = $('#success_min2_smsc_2_eu4')[0].innerText
+            var total_min2_smsc_2_eu4 = $('#total_min2_smsc_2_eu4')[0].innerText
+
+            var success_min3_smsc_2_eu4 = $('#success_min3_smsc_2_eu4')[0].innerText
+            var total_min3_smsc_2_eu4 = $('#total_min3_smsc_2_eu4')[0].innerText
+
+            var success_min4_smsc_2_eu4 = $('#success_min4_smsc_2_eu4')[0].innerText
+            var total_min4_smsc_2_eu4 = $('#total_min4_smsc_2_eu4')[0].innerText
+
+            var success_min5_smsc_2_eu4 = $('#success_min5_smsc_2_eu4')[0].innerText
+            var total_min5_smsc_2_eu4 = $('#total_min5_smsc_2_eu4')[0].innerText
+
+            var successPer_min0_smsc_2_eu4    = (success_min0_smsc_2_eu4 / total_min0_smsc_2_eu4) * 100;
+            var successPer_min1_smsc_2_eu4    = (success_min1_smsc_2_eu4 / total_min1_smsc_2_eu4) * 100;
+            var successPer_min2_smsc_2_eu4    = (success_min2_smsc_2_eu4 / total_min2_smsc_2_eu4) * 100;
+            var successPer_min3_smsc_2_eu4    = (success_min3_smsc_2_eu4 / total_min3_smsc_2_eu4) * 100;
+            var successPer_min4_smsc_2_eu4    = (success_min4_smsc_2_eu4 / total_min4_smsc_2_eu4) * 100;
+            var successPer_min5_smsc_2_eu4    = (success_min5_smsc_2_eu4 / total_min5_smsc_2_eu4) * 100;
+
+            $('#successPer_min0_smsc_2_eu4').html(successPer_min0_smsc_2_eu4.toFixed(2));
+            $('#successPer_min1_smsc_2_eu4').html(successPer_min1_smsc_2_eu4.toFixed(2));
+            $('#successPer_min2_smsc_2_eu4').html(successPer_min2_smsc_2_eu4.toFixed(2));
+            $('#successPer_min3_smsc_2_eu4').html(successPer_min3_smsc_2_eu4.toFixed(2));
+            $('#successPer_min4_smsc_2_eu4').html(successPer_min4_smsc_2_eu4.toFixed(2));
+            $('#successPer_min5_smsc_2_eu4').html(successPer_min5_smsc_2_eu4.toFixed(2));
+        });
+    
+    });
+    </script>

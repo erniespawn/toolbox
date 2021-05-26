@@ -1,0 +1,55 @@
+{% load static %}
+<link href="{% static 'crm/css/main.css' %}" rel="stylesheet">
+
+<br>
+
+<div class="row">
+	<div class="col">
+		<div class="col-md">
+			<div class="card text-center text-white  mb-3" id="total-orders">
+			  	<div class="card-header">
+			  		<h5 class="card-title">Time of extraction from SMSC to DB</h5>
+			  	</div>
+			  	<div class="card-body">
+					<h3 class="card-title"></h3>
+					<th>
+						<td>
+							<h2>   {{final_time}}   </h2>	
+						</td>
+					</th>
+			  	</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col">
+		<div class="col-md">
+			<div class="card text-center text-white  mb-3" id="orders-delivered">
+			  	<div class="card-header">
+			  		<h5 class="card-title">Total cdr records</h5>
+			  	</div>
+			  	<div class="card-body">
+					<h3 class="card-title"></h3>
+					<th>
+							<td>
+								<h2>   {{ count_total_smsc_2_eu4 }}   </h2>	
+							</td>
+						</th>
+			  	</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col">
+		<div class="col-md">
+			<div class="card text-center text-white  mb-3" id="orders-pending">
+			  	<div class="card-header">
+			  		<h5 class="card-title">TBD</h5>
+			  	</div>
+			  	<div class="card-body">
+			    	<h3 class="card-title"></h3>
+			  	</div>
+			</div>
+		</div>
+	</div>
+</div>

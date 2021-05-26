@@ -1,0 +1,50 @@
+
+{% extends 'crm/base.html' %}
+
+
+{% block content %}
+
+
+{% include 'crm/status.html' %}
+
+
+<hr>
+<br>
+<br>
+
+<hr>
+<br>
+<br>
+
+
+
+<br>
+<form method='POST'> {% csrf_token %}
+		{{ form.as_p }} 
+	  <label for="cars">Choose a date:</label>
+	  <select name="date" id="cars">
+	    <option value="0">Current</option>
+	    <option value="-1">One hour Ago</option>
+			<option value="-2">Two hours ago</option>
+			<option value="examplefile">examplefile</option>
+	  </select><br><br>
+	<input type="text" name="NetworkID" placeholder="NetworkID" /><br><br>
+  
+
+	<label for="smsc">Choose a system:</label>
+	<select name="smsc" id="smsc">
+	<option value="smsc-1-eu1-prod">smsc-1-eu1-prod</option>
+	<option value="smsc-2-eu4-prod">smsc-2-eu1-prod</option>
+	<option value="smsc-1-eu4-prod">smsc-1-eu4-prod</option>
+	<option value="smsc-2-eu4-prod">smsc-2-eu4-prod</option>
+	</select><br><br>
+
+  <input type="submit" value="Run" />
+  
+</form>
+
+
+
+
+
+{% endblock %}

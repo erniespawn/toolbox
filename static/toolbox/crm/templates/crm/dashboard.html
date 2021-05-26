@@ -1,0 +1,875 @@
+
+{% extends 'crm/base.html' %}
+<!-- {% load static %}
+<link href="{% static 'crm/css/main.css' %}" rel="stylesheet"> -->
+
+{% block content %}
+
+
+  {% include 'crm/status.html' %}
+  <br>
+
+  <div class="row">
+      <div class="col-md-4">
+          <a >Success Percentage</a>
+          <hr>
+          <div class="card card-body">
+              <a class="btn btn-primary  btn-sm btn-block" id="suc-percentage"  href="">SMSC-2-EU4</a>
+              <table class="table table-sm">
+                  <tr>
+                      <th>Time</th>
+                      <th>Total</th>
+                      <th>Success</th>
+                      <th>Failed</th>
+                      <th>Success Rate</th>
+                  </tr>
+                  <tr>        
+                        <tr> <td>{{get_hour}}{{min0}}</td>  <td id='total_min0_smsc_2_eu4' value=''>{{ total_min0_smsc_2_eu4 }}</td>  <td id='success_min0_smsc_2_eu4' value=''>{{ success_min0_smsc_2_eu4 }}</td>    <td>{{failed_min0_smsc_2_eu4}}</td>  <td><span id=successPer_min0_smsc_2_eu4></span></td></tr>
+                        <tr> <td>{{get_hour}}{{min1}}</td>  <td id='total_min1_smsc_2_eu4' value=''>{{ total_min1_smsc_2_eu4 }}</td>  <td id='success_min1_smsc_2_eu4' value=''>{{ success_min1_smsc_2_eu4 }}</td>    <td>{{failed_min1_smsc_2_eu4}}</td>  <td><span id=successPer_min1_smsc_2_eu4></span></td></tr>
+                        <tr> <td>{{get_hour}}{{min2}}</td>  <td id='total_min2_smsc_2_eu4' value=''>{{ total_min2_smsc_2_eu4 }}</td>  <td id='success_min2_smsc_2_eu4' value=''>{{ success_min2_smsc_2_eu4 }}</td>    <td>{{failed_min2_smsc_2_eu4}}</td>  <td><span id=successPer_min2_smsc_2_eu4></span></td></tr>
+                        <tr> <td>{{get_hour}}{{min3}}</td>  <td id='total_min3_smsc_2_eu4' value=''>{{ total_min3_smsc_2_eu4 }}</td>  <td id='success_min3_smsc_2_eu4' value=''>{{ success_min3_smsc_2_eu4 }}</td>    <td>{{failed_min3_smsc_2_eu4}}</td>  <td><span id=successPer_min3_smsc_2_eu4></span></td></tr>
+                        <tr> <td>{{get_hour}}{{min4}}</td>  <td id='total_min4_smsc_2_eu4' value=''>{{ total_min4_smsc_2_eu4 }}</td>  <td id='success_min4_smsc_2_eu4' value=''>{{ success_min4_smsc_2_eu4 }}</td>    <td>{{failed_min4_smsc_2_eu4}}</td>  <td><span id=successPer_min4_smsc_2_eu4></span></td></tr>
+                        <tr> <td>{{get_hour}}{{min5}}</td>  <td id='total_min5_smsc_2_eu4' value=''>{{ total_min5_smsc_2_eu4 }}</td>  <td id='success_min5_smsc_2_eu4' value=''>{{ success_min5_smsc_2_eu4 }}</td>    <td>{{failed_min5_smsc_2_eu4}}</td>  <td><span id=successPer_min5_smsc_2_eu4></span></td></tr>
+                    </tr>              
+              </table>
+          </div>
+      </div>
+      
+      <div class="col-md-2">
+          <a> SRI Failures for SG</a>
+          <hr>
+          <div class="card card-body">
+              <a class="btn btn-primary  btn-sm btn-block" id="sri-percentage" href="">SRI SMSC-2-EU4</a>
+              <table class="table table-sm">
+                  <tr>
+                      <th>Time</th>
+                      <th>SRI Timeouts</th>
+                  </tr>
+                  <tr>
+                    <tr><td>{{get_hour}}{{min0}}</td><td>{{ sri_min0_smsc_2_eu4 }}</td> </tr>
+                    <tr><td>{{get_hour}}{{min1}}</td><td>{{ sri_min1_smsc_2_eu4 }}</td> </tr>
+                    <tr><td>{{get_hour}}{{min2}}</td><td>{{ sri_min2_smsc_2_eu4 }}</td> </tr>
+                    <tr><td>{{get_hour}}{{min3}}</td><td>{{ sri_min3_smsc_2_eu4 }}</td> </tr>
+                    <tr><td>{{get_hour}}{{min4}}</td><td>{{ sri_min4_smsc_2_eu4 }}</td> </tr>
+                    <tr><td>{{get_hour}}{{min5}}</td><td>{{ sri_min5_smsc_2_eu4 }}</td> </tr>
+                  </tr>
+              </table>
+          </div>
+      </div>
+      <div class="col-md-2">
+            <a> MTFS Timeout SingTel </a>
+            <hr>
+            <div class="card card-body">
+                <a class="btn btn-primary  btn-sm btn-block" id="row1-3" href="">MCCMNC 52501</a>
+                <table class="table table-sm">
+                    <tr>
+                        <th>Time</th>
+                        <th>MTFS Timeouts</th>
+                    </tr>
+                    <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td><td>{{ mtfs_min0_smsc_2_eu4 }}</td> </tr>
+                            <tr><td>{{get_hour}}{{min1}}</td><td>{{ mtfs_min1_smsc_2_eu4 }}</td> </tr>
+                            <tr><td>{{get_hour}}{{min2}}</td><td>{{ mtfs_min2_smsc_2_eu4 }}</td> </tr>
+                            <tr><td>{{get_hour}}{{min3}}</td><td>{{ mtfs_min3_smsc_2_eu4 }}</td> </tr>
+                            <tr><td>{{get_hour}}{{min4}}</td><td>{{ mtfs_min4_smsc_2_eu4 }}</td> </tr>
+                            <tr><td>{{get_hour}}{{min5}}</td><td>{{ mtfs_min5_smsc_2_eu4 }}</td> </tr>
+                      </tr>                   
+                </table>
+            </div>
+        </div>
+
+
+        <div class="col-md-2">
+                <a>MTFS Timeout StarHub</a>
+                <hr>
+                <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="row1-4" href="">MCCMNC 52505</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>MTFS Timeouts</th>
+                        </tr>
+                        <tr>
+                                <tr><td>{{get_hour}}{{min0}}</td><td>{{ mtfs_min0_smsc_2_eu4_1 }}</td> </tr>
+                                <tr><td>{{get_hour}}{{min1}}</td><td>{{ mtfs_min1_smsc_2_eu4_1 }}</td> </tr>
+                                <tr><td>{{get_hour}}{{min2}}</td><td>{{ mtfs_min2_smsc_2_eu4_1 }}</td> </tr>
+                                <tr><td>{{get_hour}}{{min3}}</td><td>{{ mtfs_min3_smsc_2_eu4_1 }}</td> </tr>
+                                <tr><td>{{get_hour}}{{min4}}</td><td>{{ mtfs_min4_smsc_2_eu4_1 }}</td> </tr>
+                                <tr><td>{{get_hour}}{{min5}}</td><td>{{ mtfs_min5_smsc_2_eu4_1 }}</td> </tr>
+                          </tr>
+                    </table>
+                </div>
+            </div>
+
+
+            <div class="col-md-2">
+                    <a>MTFS Timeout M1</a>
+                    <hr>
+                    <div class="card card-body">
+                        <a class="btn btn-primary  btn-sm btn-block" id="row1-5" href="">MCCMNC 52503</a>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Time</th>
+                                <th>MTFS Timeouts</th>  
+                            </tr>
+                            <tr>
+                                    <tr><td>{{get_hour}}{{min0}}</td><td>{{ mtfs_52503_min0_smsc_2_eu4_0 }}</td> </tr>
+                                    <tr><td>{{get_hour}}{{min1}}</td><td>{{ mtfs_52503_min1_smsc_2_eu4_0 }}</td> </tr>
+                                    <tr><td>{{get_hour}}{{min2}}</td><td>{{ mtfs_52503_min2_smsc_2_eu4_0 }}</td> </tr>
+                                    <tr><td>{{get_hour}}{{min3}}</td><td>{{ mtfs_52503_min3_smsc_2_eu4_0 }}</td> </tr>
+                                    <tr><td>{{get_hour}}{{min4}}</td><td>{{ mtfs_52503_min4_smsc_2_eu4_0 }}</td> </tr>
+                                    <tr><td>{{get_hour}}{{min5}}</td><td>{{ mtfs_52503_min5_smsc_2_eu4_0 }}</td> </tr>
+                              </tr>             
+                        </table>
+                    </div>
+                </div>
+  </div>
+  
+<hr>
+<br>
+<br>
+
+
+<div class="row">
+        <div class="col-md-3">
+                <a>SRI timeout breakdown 1 GT 3197015001050</a>
+                <div class="card card-body">
+                        <a class="btn btn-primary  btn-sm btn-block" id="bd-sri-percentage" href="">SMSC-2-EU4 Route TATA</a>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Time</th>
+                                <th>Total Failed</th>
+                            </tr>
+                            <tr>
+                                   <tr><td>{{get_hour}}{{min0}}</td> <td>{{ sri_gt1_1001_min0_smsc_2_eu4_0 }}</td></tr>
+                                   <tr><td>{{get_hour}}{{min1}}</td> <td>{{ sri_gt1_1001_min1_smsc_2_eu4_0 }}</td></tr>
+                                   <tr><td>{{get_hour}}{{min2}}</td> <td>{{ sri_gt1_1001_min2_smsc_2_eu4_0 }}</td></tr>
+                                   <tr><td>{{get_hour}}{{min3}}</td> <td>{{ sri_gt1_1001_min3_smsc_2_eu4_0 }}</td></tr>
+                                   <tr><td>{{get_hour}}{{min4}}</td> <td>{{ sri_gt1_1001_min4_smsc_2_eu4_0 }}</td></tr>
+                                   <tr><td>{{get_hour}}{{min5}}</td> <td>{{ sri_gt1_1001_min5_smsc_2_eu4_0 }}</td></tr>
+                            </tr>        
+                        </table>
+                    </div>
+
+        </div>
+        <div class="col-md-3">
+                <a>SRI timeout breakdown 2 GT 3197015001050</a>
+                <div class="card card-body">
+                        <a class="btn btn-primary  btn-sm btn-block" id="bd-sri-percentage" href="">SMSC-2-EU4 Route iBasis</a>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Time</th>
+                                <th>Total Failed</th>
+                            </tr>
+                            <tr>
+                                    <tr><td>{{get_hour}}{{min0}}</td> <td>{{ sri_gt1_1002_min0_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min1}}</td> <td>{{ sri_gt1_1002_min1_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min2}}</td> <td>{{ sri_gt1_1002_min2_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min3}}</td> <td>{{ sri_gt1_1002_min3_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min4}}</td> <td>{{ sri_gt1_1002_min4_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min5}}</td> <td>{{ sri_gt1_1002_min5_smsc_2_eu4_0 }}</td></tr>
+                            </tr>                    
+                        </table>
+                    </div>
+
+        </div>
+        <div class="col-md-3">
+                <a>SRI timeout breakdown 3 GT 3197015001050</a>
+                <div class="card card-body">
+                        <a class="btn btn-primary  btn-sm btn-block" id="bd-sri-percentage" href="">SMSC-2-EU4 Route Comfone</a>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Time</th>
+                                <th>Total Failed</th>
+                            </tr>
+                            <tr>
+                                    <tr><td>{{get_hour}}{{min0}}</td> <td>{{ sri_gt1_1003_min0_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min1}}</td> <td>{{ sri_gt1_1003_min1_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min2}}</td> <td>{{ sri_gt1_1003_min2_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min3}}</td> <td>{{ sri_gt1_1003_min3_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min4}}</td> <td>{{ sri_gt1_1003_min4_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min5}}</td> <td>{{ sri_gt1_1003_min5_smsc_2_eu4_0 }}</td></tr>
+                            </tr>                     
+                        </table>
+                    </div>
+
+        </div>
+        <div class="col-md-3">
+                <a>SRI timeout breakdown 4 GT 3197015001050</a>
+                <div class="card card-body">
+                        <a class="btn btn-primary  btn-sm btn-block" id="bd-sri-percentage" href="">SMSC-2-EU4 Route BICS</a>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Time</th>
+                                <th>Total Failed</th>
+                            </tr>
+                            <tr>
+                                    <tr><td>{{get_hour}}{{min0}}</td> <td>{{ sri_gt1_1004_min0_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min1}}</td> <td>{{ sri_gt1_1004_min1_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min2}}</td> <td>{{ sri_gt1_1004_min2_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min3}}</td> <td>{{ sri_gt1_1004_min3_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min4}}</td> <td>{{ sri_gt1_1004_min4_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min5}}</td> <td>{{ sri_gt1_1004_min5_smsc_2_eu4_0 }}</td></tr>
+                            </tr>                       
+                        </table>
+                    </div>
+        </div>
+</div>
+
+<hr>
+<br>
+<br>
+
+<div class="row">
+        <div class="col-md-3">
+                <a>SRI timeout breakdown 1 GT 61491500050</a>
+                <div class="card card-body">
+                        <a class="btn btn-primary  btn-sm btn-block" id="bd-sri-percentage" href="">SMSC-2-EU4 Route TATA</a>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Time</th>
+                                <th>Total Failed</th>
+  
+                            </tr>
+                            <tr>
+                                    <tr><td>{{get_hour}}{{min0}}</td> <td>{{ sri_gt2_1001_min0_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min1}}</td> <td>{{ sri_gt2_1001_min1_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min2}}</td> <td>{{ sri_gt2_1001_min2_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min3}}</td> <td>{{ sri_gt2_1001_min3_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min4}}</td> <td>{{ sri_gt2_1001_min4_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min5}}</td> <td>{{ sri_gt2_1001_min5_smsc_2_eu4_0 }}</td></tr>
+                            </tr>                     
+                        </table>
+                    </div>
+        </div>
+
+
+        <div class="col-md-3">
+                <a>SRI timeout breakdown 2 GT 61491500050</a>
+                <div class="card card-body">
+                        <a class="btn btn-primary  btn-sm btn-block" id="bd-sri-percentage" href="">SMSC-2-EU4 Route iBasis</a>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Time</th>
+                                <th>Total Failed</th>
+                            </tr>
+                            <tr>
+                                   <tr><td>{{get_hour}}{{min0}}</td> <td>{{ sri_gt2_1002_min0_smsc_2_eu4_0 }}</td></tr>
+                                   <tr><td>{{get_hour}}{{min1}}</td> <td>{{ sri_gt2_1002_min0_smsc_2_eu4_0 }}</td></tr>
+                                   <tr><td>{{get_hour}}{{min2}}</td> <td>{{ sri_gt2_1002_min0_smsc_2_eu4_0 }}</td></tr>
+                                   <tr><td>{{get_hour}}{{min3}}</td> <td>{{ sri_gt2_1002_min0_smsc_2_eu4_0 }}</td></tr>
+                                   <tr><td>{{get_hour}}{{min4}}</td> <td>{{ sri_gt2_1002_min0_smsc_2_eu4_0 }}</td></tr>
+                                   <tr><td>{{get_hour}}{{min5}}</td> <td>{{ sri_gt2_1002_min0_smsc_2_eu4_0 }}</td></tr>
+                            </tr>                   
+                        </table>
+                    </div>
+
+        </div>
+        <div class="col-md-3">
+                <a>SRI timeout breakdown 3 GT 61491500050</a>
+                <div class="card card-body">
+                        <a class="btn btn-primary  btn-sm btn-block" id="bd-sri-percentage" href="">SMSC-2-EU4 Route Comfone</a>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Time</th>
+                                <th>Total Failed</th>
+                            </tr>
+                            <tr>
+                                  <tr><td>{{get_hour}}{{min0}}</td> <td>{{ sri_gt2_1003_min0_smsc_2_eu4_0 }}</td></tr>
+                                  <tr><td>{{get_hour}}{{min1}}</td> <td>{{ sri_gt2_1003_min0_smsc_2_eu4_0 }}</td></tr>
+                                  <tr><td>{{get_hour}}{{min2}}</td> <td>{{ sri_gt2_1003_min0_smsc_2_eu4_0 }}</td></tr>
+                                  <tr><td>{{get_hour}}{{min3}}</td> <td>{{ sri_gt2_1003_min0_smsc_2_eu4_0 }}</td></tr>
+                                  <tr><td>{{get_hour}}{{min4}}</td> <td>{{ sri_gt2_1003_min0_smsc_2_eu4_0 }}</td></tr>
+                                  <tr><td>{{get_hour}}{{min5}}</td> <td>{{ sri_gt2_1003_min0_smsc_2_eu4_0 }}</td></tr>
+                            </tr>                      
+                        </table>
+                    </div>
+        </div>
+
+        <div class="col-md-3">
+                <a>SRI timeout breakdown 4 GT 61491500050</a>
+                <div class="card card-body">
+                        <a class="btn btn-primary  btn-sm btn-block" id="bd-sri-percentage" href="">SMSC-2-EU4 Route BICS</a>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Time</th>
+                                <th>Total Failed</th>
+                            </tr>
+                            <tr>
+                                    <tr><td>{{get_hour}}{{min0}}</td> <td>{{ sri_gt2_1004_min0_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min1}}</td> <td>{{ sri_gt2_1004_min0_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min2}}</td> <td>{{ sri_gt2_1004_min0_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min3}}</td> <td>{{ sri_gt2_1004_min0_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min4}}</td> <td>{{ sri_gt2_1004_min0_smsc_2_eu4_0 }}</td></tr>
+                                    <tr><td>{{get_hour}}{{min5}}</td> <td>{{ sri_gt2_1004_min0_smsc_2_eu4_0 }}</td></tr>
+                            </tr>                    
+                        </table>
+                    </div>
+        </div>
+</div>
+
+
+
+
+
+<hr><br><br>
+
+
+
+
+<div class="row">
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 1 GT 3197015001050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="bd-mtfs-percentage" href="">SMSC-2-EU4 Route TATA</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+
+                        </tr>
+                        <tr>
+                              <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt1_1001_min0_smsc_2_eu4_0 }}</td></tr>
+                              <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt1_1001_min1_smsc_2_eu4_0 }}</td></tr>
+                              <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt1_1001_min2_smsc_2_eu4_0 }}</td></tr>
+                              <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt1_1001_min3_smsc_2_eu4_0 }}</td></tr>
+                              <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt1_1001_min4_smsc_2_eu4_0 }}</td></tr>
+                              <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt1_1001_min5_smsc_2_eu4_0 }}</td></tr>  
+                        </tr>                   
+                    </table>
+                </div>
+    </div>
+
+
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 2 GT 3197015001050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="bd-mtfs-percentage" href="">SMSC-2-EU4 Route iBasis</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt1_1002_min0_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt1_1002_min1_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt1_1002_min2_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt1_1002_min3_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt1_1002_min4_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt1_1002_min5_smsc_2_eu4_0 }}</td></tr>
+                        </tr>                  
+                    </table>
+                </div>
+
+    </div>
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 3 GT 3197015001050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="bd-mtfs-percentage" href="">SMSC-2-EU4 Route Comfone</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+
+                        </tr>
+                        <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt1_1003_min0_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt1_1003_min1_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt1_1003_min2_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt1_1003_min3_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt1_1003_min4_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt1_1003_min5_smsc_2_eu4_0 }}</td></tr>   
+                        </tr>                      
+                    </table>
+                </div>
+
+    </div>
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 4 GT 3197015001050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="bd-mtfs-percentage" href="">SMSC-2-EU4 Route BICS</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt1_1004_min0_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt1_1004_min1_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt1_1004_min2_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt1_1004_min3_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt1_1004_min4_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt1_1004_min5_smsc_2_eu4_0 }}</td></tr>   
+                        </tr>             
+                    </table>
+                </div>
+    </div>
+</div>
+
+
+
+<br>
+
+<div class="row">
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 1 GT 61491500050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="bd-mtfs-percentage" href="">SMSC-2-EU4 Route TATA</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                                <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt2_1001_min0_smsc_2_eu4_0 }}</td></tr>
+                                <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt2_1001_min1_smsc_2_eu4_0 }}</td></tr>
+                                <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt2_1001_min2_smsc_2_eu4_0 }}</td></tr>
+                                <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt2_1001_min3_smsc_2_eu4_0 }}</td></tr>
+                                <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt2_1001_min4_smsc_2_eu4_0 }}</td></tr>
+                                <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt2_1001_min5_smsc_2_eu4_0 }}</td></tr>
+                        </tr>                
+                    </table>
+                </div>
+    </div>
+
+
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 2 GT 61491500050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="bd-mtfs-percentage" href="">SMSC-2-EU4 Route iBasis</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt2_1002_min0_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt2_1002_min1_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt2_1002_min2_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt2_1002_min3_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt2_1002_min4_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt2_1002_min5_smsc_2_eu4_0 }}</td></tr>
+                        </tr>                  
+                    </table>
+                </div>
+
+    </div>
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 3 GT 61491500050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="bd-mtfs-percentage" href="">SMSC-2-EU4 Route Comfone</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt2_1003_min0_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt2_1003_min1_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt2_1003_min2_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt2_1003_min3_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt2_1003_min4_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt2_1003_min5_smsc_2_eu4_0 }}</td></tr>   
+                        </tr>                    
+                    </table>
+                </div>
+
+    </div>
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 4 GT 61491500050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="bd-mtfs-percentage" href="">SMSC-2-EU4 Route BICS</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt2_1004_min0_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt2_1004_min1_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt2_1004_min2_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt2_1004_min3_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt2_1004_min4_smsc_2_eu4_0 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt2_1004_min5_smsc_2_eu4_0 }}</td></tr>   
+                        </tr>                  
+                    </table>
+                </div>
+    </div>
+</div>
+
+
+
+
+
+
+<br>
+
+<div class="row">
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 1 GT 3197015001050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="sh-percentage" href="">SMSC-2-EU4 Route TATA</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                                 <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt1_1001_min0_smsc_2_eu4_1 }}</td></tr>
+                                 <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt1_1001_min1_smsc_2_eu4_1 }}</td></tr>
+                                 <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt1_1001_min2_smsc_2_eu4_1 }}</td></tr>
+                                 <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt1_1001_min3_smsc_2_eu4_1 }}</td></tr>
+                                 <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt1_1001_min4_smsc_2_eu4_1 }}</td></tr>
+                                 <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt1_1001_min5_smsc_2_eu4_1 }}</td></tr>
+                        </tr>           
+                    </table>
+                </div>
+    </div>
+
+
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 2 GT 3197015001050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="sh-percentage" href="">SMSC-2-EU4 Route iBasis</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt1_1002_min0_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt1_1002_min1_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt1_1002_min2_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt1_1002_min3_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt1_1002_min4_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt1_1002_min5_smsc_2_eu4_1 }}</td></tr>
+                        </tr>                  
+                    </table>
+                </div>
+
+    </div>
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 3 GT 3197015001050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="sh-percentage" href="">SMSC-2-EU4 Route Comfone</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt1_1003_min0_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt1_1003_min1_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt1_1003_min2_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt1_1003_min3_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt1_1003_min4_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt1_1003_min5_smsc_2_eu4_1 }}</td></tr>   
+                        </tr>                 
+                    </table>
+                </div>
+
+    </div>
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 4 GT 3197015001050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="sh-percentage" href="">SMSC-2-EU4 Route BICS</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt1_1004_min0_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt1_1004_min1_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt1_1004_min2_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt1_1004_min3_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt1_1004_min4_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt1_1004_min5_smsc_2_eu4_1 }}</td></tr>   
+                        </tr>                     
+                    </table>
+                </div>
+    </div>
+</div>
+
+
+
+<br>
+
+<div class="row">
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 1 GT 61491500050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="sh-percentage" href="">SMSC-2-EU4 Route TATA</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                                  <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt2_1001_min0_smsc_2_eu4_1 }}</td></tr>
+                                  <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt2_1001_min1_smsc_2_eu4_1 }}</td></tr>
+                                  <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt2_1001_min2_smsc_2_eu4_1 }}</td></tr>
+                                  <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt2_1001_min3_smsc_2_eu4_1 }}</td></tr>
+                                  <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt2_1001_min4_smsc_2_eu4_1 }}</td></tr>
+                                  <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt2_1001_min5_smsc_2_eu4_1 }}</td></tr>
+                        </tr>           
+                    </table>
+                </div>
+    </div>
+
+
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 2 GT 61491500050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="sh-percentage" href="">SMSC-2-EU4 Route iBasis</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt2_1002_min0_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt2_1002_min1_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt2_1002_min2_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt2_1002_min3_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt2_1002_min4_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt2_1002_min5_smsc_2_eu4_1 }}</td></tr>
+                        </tr>                  
+                    </table>
+                </div>
+
+    </div>
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 3 GT 61491500050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="sh-percentage" href="">SMSC-2-EU4 Route Comfone</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt2_1003_min0_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt2_1003_min1_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt2_1003_min2_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt2_1003_min3_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt2_1003_min4_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt2_1003_min5_smsc_2_eu4_1 }}</td></tr>   
+                        </tr>                 
+                    </table>
+                </div>
+
+    </div>
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 4 GT 61491500050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="sh-percentage" href="">SMSC-2-EU4 Route BICS</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt2_1004_min0_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt2_1004_min1_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt2_1004_min2_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt2_1004_min3_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt2_1004_min4_smsc_2_eu4_1 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt2_1004_min5_smsc_2_eu4_1 }}</td></tr>   
+                        </tr>                     
+                    </table>
+                </div>
+    </div>
+</div>
+
+
+
+
+
+<br>
+
+<div class="row">
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 1 GT 3197015001050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="m1-percentage" href="">SMSC-2-EU4 Route TATA</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                                <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt1_1001_min0_smsc_2_eu4_2 }}</td></tr>
+                                <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt1_1001_min1_smsc_2_eu4_2 }}</td></tr>
+                                <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt1_1001_min2_smsc_2_eu4_2 }}</td></tr>
+                                <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt1_1001_min3_smsc_2_eu4_2 }}</td></tr>
+                                <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt1_1001_min4_smsc_2_eu4_2 }}</td></tr>
+                                <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt1_1001_min5_smsc_2_eu4_2 }}</td></tr>
+                        </tr>           
+                    </table>
+                </div>
+    </div>
+
+
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 2 GT 3197015001050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="m1-percentage" href="">SMSC-2-EU4 Route iBasis</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt1_1002_min0_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt1_1002_min1_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt1_1002_min2_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt1_1002_min3_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt1_1002_min4_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt1_1002_min5_smsc_2_eu4_2 }}</td></tr>
+                        </tr>                  
+                    </table>
+                </div>
+
+    </div>
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 3 GT 3197015001050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="m1-percentage" href="">SMSC-2-EU4 Route Comfone</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt1_1003_min0_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt1_1003_min1_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt1_1003_min2_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt1_1003_min3_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt1_1003_min4_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt1_1003_min5_smsc_2_eu4_2 }}</td></tr>   
+                        </tr>                 
+                    </table>
+                </div>
+
+    </div>
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 4 GT 3197015001050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="m1-percentage" href="">SMSC-2-EU4 Route BICS</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt1_1004_min0_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt1_1004_min1_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt1_1004_min2_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt1_1004_min3_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt1_1004_min4_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt1_1004_min5_smsc_2_eu4_2 }}</td></tr>   
+                        </tr>                     
+                    </table>
+                </div>
+    </div>
+</div>
+
+
+
+
+<br>
+
+<div class="row">
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 1 GT 61491500050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="m1-percentage" href="">SMSC-2-EU4 Route TATA</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                                <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt2_1001_min0_smsc_2_eu4_2 }}</td></tr>
+                                <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt2_1001_min1_smsc_2_eu4_2 }}</td></tr>
+                                <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt2_1001_min2_smsc_2_eu4_2 }}</td></tr>
+                                <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt2_1001_min3_smsc_2_eu4_2 }}</td></tr>
+                                <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt2_1001_min4_smsc_2_eu4_2 }}</td></tr>
+                                <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt2_1001_min5_smsc_2_eu4_2 }}</td></tr>
+                        </tr>           
+                    </table>
+                </div>
+    </div>
+
+
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 2 GT 61491500050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="m1-percentage" href="">SMSC-2-EU4 Route iBasis</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt2_1002_min0_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt2_1002_min1_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt2_1002_min2_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt2_1002_min3_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt2_1002_min4_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt2_1002_min5_smsc_2_eu4_2 }}</td></tr>
+                        </tr>                  
+                    </table>
+                </div>
+
+    </div>
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 3 GT 61491500050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="m1-percentage" href="">SMSC-2-EU4 Route Comfone</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt2_1003_min0_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt2_1003_min1_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt2_1003_min2_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt2_1003_min3_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt2_1003_min4_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt2_1003_min5_smsc_2_eu4_2 }}</td></tr>   
+                        </tr>                 
+                    </table>
+                </div>
+
+    </div>
+    <div class="col-md-3">
+            <a>FWSM timeout breakdown 4 GT 61491500050</a>
+            <div class="card card-body">
+                    <a class="btn btn-primary  btn-sm btn-block" id="m1-percentage" href="">SMSC-2-EU4 Route BICS</a>
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Time</th>
+                            <th>Total Failed</th>
+                        </tr>
+                        <tr>
+                            <tr><td>{{get_hour}}{{min0}}</td> <td>{{ mtfs_gt2_1004_min0_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min1}}</td> <td>{{ mtfs_gt2_1004_min1_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min2}}</td> <td>{{ mtfs_gt2_1004_min2_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min3}}</td> <td>{{ mtfs_gt2_1004_min3_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min4}}</td> <td>{{ mtfs_gt2_1004_min4_smsc_2_eu4_2 }}</td></tr>
+                            <tr><td>{{get_hour}}{{min5}}</td> <td>{{ mtfs_gt2_1004_min5_smsc_2_eu4_2 }}</td></tr>   
+                        </tr>                     
+                    </table>
+                </div>
+    </div>
+</div>
+
+
+
+{% include 'crm/jquery.html' %}
+
+    
+{% endblock  %}

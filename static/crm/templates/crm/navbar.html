@@ -1,0 +1,35 @@
+
+
+{% load static %}
+
+
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <img src="{% static 'crm/img/cake2.jpg' %}" class="rounded" alt="flower">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item active">
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/crm">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'crm:reset' %}">Reset DB</a>
+        </li>
+        <li class="nav-item">
+          <!-- <a class="nav-link" href="{% url 'crm:customer' %}">Customer</a> -->
+          <li class="nav-item">
+              <a class="nav-link" href="{% url 'crm:form_submit' %}">SMSC</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'crm:esme_dlr' %}">ESME_DLR</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'crm:esme_dlr_reset' %}">ESME_DLR_RESET</a>
+        </li>
+      </ul>
+    </div>
+  </nav>

@@ -1,0 +1,82 @@
+
+
+body{
+    background-color: #ebeff5;
+}
+
+
+#total-orders{
+    background-color: #4cb4c7;
+}
+
+
+#orders-delivered{
+    background-color: #7abecc;
+}
+
+#orders-pending{
+    background-color: #7CD1C0;
+}
+
+#suc-percentage{
+    background-color: #7abecc;
+}
+
+#sri-percentage{
+    background-color: rgb(86, 181, 160);
+}
+
+#mtfs-percentage{
+    background-color: #9c73c4;
+}
+
+#bd-sri-percentage{
+    background-color: rgb(86, 181, 160);
+}
+
+#bd-mtfs-percentage{
+    background-color: #794da4;
+}
+
+#sh-percentage{
+    background-color: #d5d049;
+}
+
+#m1-percentage{
+    background-color: #67c97b;
+}
+
+#row1-1{
+    background-color: #7abecc;
+}
+
+#row1-2{
+    background-color: rgb(86, 181, 160);
+}
+
+
+#row1-3{
+    background-color: #794da4;
+}
+
+#row1-4{
+    background-color: #dfd812;
+}
+
+#row1-5{
+    background-color: #12df3b;
+}
+
+#total_dbs_count{
+    background-color: #67c97b;
+}
+#total_sg_count{
+    background-color: #d5d049;
+}
+
+#total_dlr_count{
+    background-color: #4cb4c7;
+}
+th {
+    font-size: 12px;
+}

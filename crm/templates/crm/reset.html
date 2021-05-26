@@ -1,0 +1,27 @@
+{% extends 'crm/base.html' %}
+
+
+
+{% block content %}
+
+
+{% include 'crm/status.html' %}
+  
+  {{success_min0_smsc_2_eu4}}
+  <hr>
+  <br>
+  <br>
+  
+  <hr>
+  <br>
+
+  
+  <form class="" action="" method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input class="btn btn-large btn-primary" type="Submit" name="reset" value="Reset" />
+  </form>
+
+<br>
+
+{% endblock  %}
