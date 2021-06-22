@@ -11,7 +11,7 @@ import subprocess, logging
 from datetime import date, timedelta
 from subprocess import PIPE, Popen
 from django.db.models import Q
-from crm.models import CdrProcess, row1_1
+from crm.models import CdrProcess, row1_1, cdrTable
 import sqlite3
 from itertools import product
 logger = logging.getLogger(__name__)
@@ -81,21 +81,21 @@ def esme_dlr(request):
                 try:
 
                     list = []
-                    st = " ".join(output.split('\n')) 
+                    st = " ".join(output.split('\n'))
                     st = st.split(' ')
                     x = EsmeDlr.objects.all()
                     print (x)
-                
+
                     it = iter(st) #https://stackoverflow.com/questions/16789776/iterating-over-two-values-of-a-list-at-a-time-in-python
                     for a, b, c, d, e, f, g, h in zip(*[iter(it)]*8):
                         print (a, b, c, d, e, f, g, h)
                         p = EsmeDlr(
                         date="{}".format(a),
                         time="{}".format(b),
-                        networkid="{}".format(c), 
+                        networkid="{}".format(c),
                         senderid="{}".format(d),
-                        msisdn="{}".format(e), 
-                        status="{}".format(f), 
+                        msisdn="{}".format(e),
+                        status="{}".format(f),
                         messageid="{}".format(g),
                         system="{}".format(h),
                         )
@@ -106,26 +106,26 @@ def esme_dlr(request):
             elif my_new_date == '-1':
                 p = Popen(["ssh","{}".format(my_new_smsc),"python","/home/kennyC/sms/smsc_dlr_v1.py","-s","{}".format(my_new_date)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
-                output, errors = p.communicate() 
+                output, errors = p.communicate()
                 print (output)
                 try:
 
                     list = []
-                    st = " ".join(output.split('\n')) 
+                    st = " ".join(output.split('\n'))
                     st = st.split(' ')
                     x = EsmeDlr.objects.all()
                     print (x)
-                
+
                     it = iter(st) #https://stackoverflow.com/questions/16789776/iterating-over-two-values-of-a-list-at-a-time-in-python
                     for a, b, c, d, e, f, g, h in zip(*[iter(it)]*8):
                         print (a, b, c, d, e, f, g, h)
                         p = EsmeDlr(
                         date="{}".format(a),
                         time="{}".format(b),
-                        networkid="{}".format(c), 
+                        networkid="{}".format(c),
                         senderid="{}".format(d),
-                        msisdn="{}".format(e), 
-                        status="{}".format(f), 
+                        msisdn="{}".format(e),
+                        status="{}".format(f),
                         messageid="{}".format(g),
                         system="{}".format(h),
                         )
@@ -141,21 +141,21 @@ def esme_dlr(request):
                 try:
 
                     list = []
-                    st = " ".join(output.split('\n')) 
+                    st = " ".join(output.split('\n'))
                     st = st.split(' ')
                     x = EsmeDlr.objects.all()
                     print (x)
-                
+
                     it = iter(st) #https://stackoverflow.com/questions/16789776/iterating-over-two-values-of-a-list-at-a-time-in-python
                     for a, b, c, d, e, f, g, h in zip(*[iter(it)]*8):
                         print (a, b, c, d, e, f, g, h)
                         p = EsmeDlr(
                         date="{}".format(a),
                         time="{}".format(b),
-                        networkid="{}".format(c), 
+                        networkid="{}".format(c),
                         senderid="{}".format(d),
-                        msisdn="{}".format(e), 
-                        status="{}".format(f), 
+                        msisdn="{}".format(e),
+                        status="{}".format(f),
                         messageid="{}".format(g),
                         system="{}".format(h),
                         )
@@ -184,7 +184,7 @@ def esme_dlr(request):
 
     return render(request, 'crm/esme_dlr.html', context)
 
- 
+
 
 
 
@@ -198,502 +198,293 @@ def form_submit(request):
             print (reset)
             CdrProcess.objects.all().delete()   # Delete records from DB
             row1_1.objects.all().delete()       # Delete records from row1_1
+            cdrTable.objects.all().delete()       # Delete records from cdrtable
             q = CdrProcess(time="00:00:00.000,", date='1999-99-99', msisdn='9999') # Insert 1 default record in DB and save it
             q.save()
+
+
             return render(request, "crm/smsc.html", {})
 
-        elif request.POST.get("insertDB") == 'insertDB':
-            insertDB = request.POST.get("insertDB")
-            con = sqlite3.connect('db.sqlite3')
-            cur = con.cursor()
-
-            ccsg = '65'
-            gt_sg1= '3197015001050'
-            gt_sg1= '61491500050'
-
-            ccms = '91'
-            gt_6995 = '3197015001050,'
-            gt_6994 = '3197015001052,'
-            smsc1 = 'smsc-1-eu1,'
-            smsc2 = 'smsc-2-eu1,'
-            smsc3 = 'smsc-1-eu4,'
-            smsc4 = 'smsc-2-eu4,'
-            success = 'success,'
-            partial = 'partial,'
-            failed = 'failed,'
-            temp_failed = 'temp_failed,'
-
-            s1 = list2hourv2()
-            print ("effe testen {}".format(s1))
-
-            r1 = list2hourv2()
-            for x in r1:
-                # Row 1
-                r2 = ("{}:{}".format(x[0], x[1]))
-                print (r2)
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where gt = '{}' and time like '{}%' and msisdn like '{}%' and status IN ('failed,', 'success,', 'temp_failed,')".format(gt_6994, r2, ccms))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '3', '4', '1a');".format(r2, result1[0])) #insert only time and total
-                con.commit()
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where gt = '{}' and time like '{}%' and msisdn like '{}%' and status='success,'".format(gt_6994, r2, ccms))
-                result1 = cur.fetchone()
-                cur.execute(" UPDATE crm_row1_1 SET success = '{}' WHERE time like '{}%' and user_id = '1a';".format(result1[0], r2))
-                con.commit()
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where gt = '{}' and time like '{}%' and msisdn like '{}%' and status IN ('failed,', 'temp_failed,')".format(gt_6994, r2, ccms))
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = '1a';".format(result1[0], r2))
-                con.commit()
-
-                # Row 1 column 2/3
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where gt = '{}' and time like '{}%' and msisdn like '{}%' and system = '{}' and error_msg = 'onDialogTimeoutafterSRIRequest'".format(gt_6994, r2, ccms, smsc4))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '3', '4', '1b');".format(r2, result1[0])) #insert row 1 column 2 SRI timeout
-                con.commit()
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where gt = '{}' and time like '{}%' and msisdn like '{}%' and system = '{}' and error_msg = 'onDialogTimeoutafterMtForwardSMRequest'".format(gt_6994, r2, ccms, smsc4))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '3', '4', '1c');".format(r2, result1[0])) #insert row 1 column 3 MT timeout
-                con.commit()
-
-                # Row 1 column 3 extra error added (sys_fail)
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where gt = '{}' and time like '{}%' and msisdn like '{}%' and system = '{}' and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:'".format(gt_6994, r2, ccms, smsc4))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = '1c';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 1 column 4/5
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where gt = '{}' and time like '{}%' and msisdn like '{}%' and system = '{}' and error_msg = 'onDialogTimeoutafterSRIRequest'".format(gt_6994, r2, ccms, smsc2))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '3', '4', '1d');".format(r2, result1[0])) #insert row 1 column 4 SRI timeout
-                con.commit()
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where gt = '{}' and time like '{}%' and msisdn like '{}%' and system = '{}' and error_msg = 'onDialogTimeoutafterMtForwardSMRequest'".format(gt_6994, r2, ccms, smsc2))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '3', '4', '1e');".format(r2, result1[0])) #insert row 1 column 5 MT timeout
-                con.commit()
-
-                # Row 1 column 5 extra error added (sys_fail)
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where gt = '{}' and time like '{}%' and msisdn like '{}%' and system = '{}' and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:'".format(gt_6994, r2, ccms, smsc2))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = '1e';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-
-
-
-                # Row 2
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where gt = '{}' and time like '{}%' and msisdn like '{}%' and status IN ('failed,', 'success,', 'temp_failed,', 'partial,')".format(gt_6995, r2, ccms))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '3', '4', '2a');".format(r2, result1[0])) #insert only time and total
-                con.commit()
-
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where gt = '{}' and time like '{}%' and msisdn like '{}%' and status='success,'".format(gt_6995, r2, ccms))
-                result1 = cur.fetchone()
-                cur.execute(" UPDATE crm_row1_1 SET success = '{}' WHERE time like '{}%' and user_id = '2a';".format(result1[0], r2))
-                con.commit()
-
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where gt = '{}' and time like '{}%' and msisdn like '{}%' and status IN ('failed,', 'temp_failed,')".format(gt_6995, r2, ccms))
-                result1 = cur.fetchone()
-                cur.execute(" UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = '2a';".format(result1[0], r2))
-                con.commit()
-
-                # Row 2 column 2/3
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where gt = '{}' and time like '{}%' and msisdn like '{}%' and system = '{}' and error_msg = 'onDialogTimeoutafterSRIRequest'".format(gt_6995, r2, ccms, smsc2))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '3', '4', '2b');".format(r2, result1[0])) #insert row 2 column 2 SRI timeout
-                con.commit()
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where gt = '{}' and time like '{}%' and msisdn like '{}%' and system = '{}' and error_msg = 'onDialogTimeoutafterMtForwardSMRequest'".format(gt_6995, r2, ccms, smsc2))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '3', '4', '2c');".format(r2, result1[0])) #insert row 2 column 3 MT timeout
-                con.commit()
-
-                # Row 2 column 3 extra error added (sys_fail)
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where gt = '{}' and time like '{}%' and msisdn like '{}%' and system = '{}' and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:'".format(gt_6995, r2, ccms, smsc2))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = '2c';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 2 column 4/5
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where gt = '{}' and time like '{}%' and msisdn like '{}%' and system = '{}' and error_msg = 'onDialogTimeoutafterSRIRequest'".format(gt_6995, r2, ccms, smsc4))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '3', '4', '2d');".format(r2, result1[0])) #insert row 2 column 4 SRI timeout
-                con.commit()
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where gt = '{}' and time like '{}%' and msisdn like '{}%' and system = '{}' and error_msg = 'onDialogTimeoutafterMtForwardSMRequest'".format(gt_6995, r2, ccms, smsc4))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '3', '4', '2e');".format(r2, result1[0])) #insert row 2 column 5 MT timeout
-                con.commit()
-
-                # Row 2 column 5 extra error added (sys_fail)
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where gt = '{}' and time like '{}%' and msisdn like '{}%' and system = '{}' and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:'".format(gt_6995, r2, ccms, smsc4))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = '2e';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-
-
-
-                ## SG new version row 1
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and status IN ('failed,', 'success,', 'temp_failed,')".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("INSERT INTO crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '3', '4', 'sg_1a');".format(r2, result1[0])) #insert only time and total
-                con.commit()
-
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and status='success,'".format(r2, ccsg))
-                result1 = cur.fetchone()
-                cur.execute(" UPDATE crm_row1_1 SET success = '{}' WHERE time like '{}%' and user_id = 'sg_1a';".format(result1[0], r2))
-                con.commit()
-
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and status IN ('failed,', 'temp_failed,')".format(r2, ccsg))
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_1a';".format(result1[0], r2))
-                con.commit()
-
-                # Row 1 column 2/3
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and error_msg = 'onDialogTimeoutafterSRIRequest'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '3', '4', 'sg_1b');".format(r2, result1[0])) #insert row 1 column 2 SRI timeout
-                con.commit()
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and imsi like '52501%' and error_msg = 'onDialogTimeoutafterMtForwardSMRequest'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_1c');".format(r2, result1[0])) #insert row 1 column 3 MT timeout
-                con.commit()
-                # Row 1 column 3 extra error added (sys_fail)
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and imsi like '52501%' and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_1c';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-
-                # Row 1 column 4
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and imsi like '52503%' and error_msg = 'onDialogTimeoutafterMtForwardSMRequest'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_1d');".format(r2, result1[0])) #insert row 1 column 3 MT timeout
-                con.commit()
-                # Row 1 column 3 extra error added (sys_fail)
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and imsi like '52503%' and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_1d';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 1 column 5
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and imsi like '52505%' and error_msg = 'onDialogTimeoutafterMtForwardSMRequest'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_1e');".format(r2, result1[0])) #insert row 1 column 3 MT timeout
-                con.commit()
-                # Row 1 column 3 extra error added (sys_fail)
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and imsi like '52505%' and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_1e';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-
-                # Row 2 column 1 SRI_TO GT 3197015001050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('tata01,', 'tata02,', 'tata03,', 'tata11,', 'tata12,', 'tata13,', 'tatac01,') and error_msg = 'onDialogTimeoutafterSRIRequest'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_2a');".format(r2, result1[0]))
-                con.commit()
-                # Row 2 column 2 SRI_TO GT 3197015001050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('ibasis01,', 'ibasis02,', 'ibasis03,', 'ibasis11,', 'ibasis12,', 'ibasis13,') and error_msg = 'onDialogTimeoutafterSRIRequest'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_2b');".format(r2, result1[0]))
-                con.commit()
-                # Row 2 column 3 SRI_TO GT 3197015001050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('comfone01,', 'comfone02,', 'comfone03,', 'comfone11,', 'comfone12,', 'comfone13,', 'comfonec01,') and error_msg = 'onDialogTimeoutafterSRIRequest'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_2c');".format(r2, result1[0]))
-                con.commit()
-                # Row 2 column 4 SRI_TO GT 3197015001050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('bics01,', 'bics02,', 'bics03,', 'bics11,', 'bics12,', 'bics13,') and error_msg = 'onDialogTimeoutafterSRIRequest'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_2d');".format(r2, result1[0]))
-                con.commit()
-
-
-                # Row 3 column 1 SRI_TO GT 61491500050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('tata01,', 'tata02,', 'tata03,', 'tata11,', 'tata12,', 'tata13,', 'tatac01,') and error_msg = 'onDialogTimeoutafterSRIRequest'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_3a');".format(r2, result1[0]))
-                con.commit()
-                # Row 3 column 2 SRI_TO GT 61491500050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('ibasis01,', 'ibasis02,', 'ibasis03,', 'ibasis11,', 'ibasis12,', 'ibasis13,') and error_msg = 'onDialogTimeoutafterSRIRequest'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_3b');".format(r2, result1[0]))
-                con.commit()
-                # Row 3 column 3 SRI_TO GT 61491500050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('comfone01,', 'comfone02,', 'comfone03,', 'comfone11,', 'comfone12,', 'comfone13,', 'comfonec01,') and error_msg = 'onDialogTimeoutafterSRIRequest'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_3c');".format(r2, result1[0]))
-                con.commit()
-                # Row 3 column 4 SRI_TO GT 61491500050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('bics01,', 'bics02,', 'bics03,', 'bics11,', 'bics12,', 'bics13,') and error_msg = 'onDialogTimeoutafterSRIRequest'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_3d');".format(r2, result1[0]))
-                con.commit()
-
-                # Row 4 column 1 FWSM timeout breakdown 1 GT 3197015001050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('tata01,', 'tata02,', 'tata03,', 'tata11,', 'tata12,', 'tata13,', 'tatac01,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52501%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_4a');".format(r2, result1[0]))
-                con.commit()
-                # Row 4 column 1 FWSM timeout breakdown 1 GT 3197015001050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('tata01,', 'tata02,', 'tata03,', 'tata11,', 'tata12,', 'tata13,', 'tatac01,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52501%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_4a';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-
-                # Row 4 column 2 FWSM timeout breakdown 2 GT 3197015001050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('ibasis01,', 'ibasis02,', 'ibasis03,', 'ibasis11,', 'ibasis12,', 'ibasis13,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52501%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_4b');".format(r2, result1[0]))
-                con.commit()
-                 # Row 4 column 2 FWSM timeout breakdown 1 GT 3197015001050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('ibasis01,', 'ibasis02,', 'ibasis03,', 'ibasis11,', 'ibasis12,', 'ibasis13,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52501%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_4b';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 4 column 3 FWSM timeout breakdown 3 GT 3197015001050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('comfone01,', 'comfone02,', 'comfone03,', 'comfone11,', 'comfone12,', 'comfone13,', 'comfonec01,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52501%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_4c');".format(r2, result1[0]))
-                con.commit()
-                # Row 4 column 3 FWSM timeout breakdown 1 GT 3197015001050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('comfone01,', 'comfone02,', 'comfone03,', 'comfone11,', 'comfone12,', 'comfone13,', 'comfonec01,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52501%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_4c';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 4 column 4 FWSM timeout breakdown 4 GT 3197015001050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('bics01,', 'bics02,', 'bics03,', 'bics11,', 'bics12,', 'bics13,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52501%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_4d');".format(r2, result1[0]))
-                con.commit()
-                # Row 4 column 4 FWSM timeout breakdown 1 GT 3197015001050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('bics01,', 'bics02,', 'bics03,', 'bics11,', 'bics12,', 'bics13,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52501%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_4d';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 5 column 1 FWSM timeout breakdown 1 GT 61491500050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('tata01,', 'tata02,', 'tata03,', 'tata11,', 'tata12,', 'tata13,', 'tatac01,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52501%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_5a');".format(r2, result1[0]))
-                con.commit()
-                # Row 5 column 1 FWSM timeout breakdown 1 GT 61491500050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('tata01,', 'tata02,', 'tata03,', 'tata11,', 'tata12,', 'tata13,', 'tatac01,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52501%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_5a';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 5 column 2 FWSM timeout breakdown 2 GT 61491500050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('ibasis01,', 'ibasis02,', 'ibasis03,', 'ibasis11,', 'ibasis12,', 'ibasis13,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52501%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_5b');".format(r2, result1[0]))
-                con.commit()
-                # Row 5 column 2 FWSM timeout breakdown 2 GT 61491500050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('ibasis01,', 'ibasis02,', 'ibasis03,', 'ibasis11,', 'ibasis12,', 'ibasis13,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52501%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_5b';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 5 column 3 FWSM timeout breakdown 3 GT 61491500050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('comfone01,', 'comfone02,', 'comfone03,', 'comfone11,', 'comfone12,', 'comfone13,', 'comfonec01,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52501%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_5c');".format(r2, result1[0]))
-                con.commit()
-                # Row 5 column 3 FWSM timeout breakdown 3 GT 61491500050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('comfone01,', 'comfone02,', 'comfone03,', 'comfone11,', 'comfone12,', 'comfone13,', 'comfonec01,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52501%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_5c';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 5 column 4 FWSM timeout breakdown 4 GT 61491500050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('bics01,', 'bics02,', 'bics03,', 'bics11,', 'bics12,', 'bics13,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52501%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_5d');".format(r2, result1[0]))
-                con.commit()
-                # Row 5 column 4 FWSM timeout breakdown 4 GT 61491500050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('bics01,', 'bics02,', 'bics03,', 'bics11,', 'bics12,', 'bics13,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52501%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_5d';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 6 column 1 FWSM timeout breakdown 1 GT 3197015001050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('tata01,', 'tata02,', 'tata03,', 'tata11,', 'tata12,', 'tata13,', 'tatac01,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52503%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_6a');".format(r2, result1[0]))
-                con.commit()
-                # Row 6 column 1 FWSM timeout breakdown 1 GT 3197015001050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('tata01,', 'tata02,', 'tata03,', 'tata11,', 'tata12,', 'tata13,', 'tatac01,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52503%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_6a';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 6 column 2 FWSM timeout breakdown 2 GT 3197015001050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('ibasis01,', 'ibasis02,', 'ibasis03,', 'ibasis11,', 'ibasis12,', 'ibasis13,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52503%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_6b');".format(r2, result1[0]))
-                con.commit()
-                # Row 6 column 2 FWSM timeout breakdown 2 GT 3197015001050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('ibasis01,', 'ibasis02,', 'ibasis03,', 'ibasis11,', 'ibasis12,', 'ibasis13,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52503%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_6b';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 6 column 3 FWSM timeout breakdown 3 GT 3197015001050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('comfone01,', 'comfone02,', 'comfone03,', 'comfone11,', 'comfone12,', 'comfone13,', 'comfonec01,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52503%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_6c');".format(r2, result1[0]))
-                con.commit()
-                # Row 6 column 3 FWSM timeout breakdown 3 GT 3197015001050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('comfone01,', 'comfone02,', 'comfone03,', 'comfone11,', 'comfone12,', 'comfone13,', 'comfonec01,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52503%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_6c';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-                
-                # Row 6 column 4 FWSM timeout breakdown 4 GT 3197015001050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('bics01,', 'bics02,', 'bics03,', 'bics11,', 'bics12,', 'bics13,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52503%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_6d');".format(r2, result1[0]))
-                con.commit()
-                # Row 6 column 4 FWSM timeout breakdown 4 GT 3197015001050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('bics01,', 'bics02,', 'bics03,', 'bics11,', 'bics12,', 'bics13,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52503%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_6d';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 7 column 1 FWSM timeout breakdown 1 GT 61491500050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('tata01,', 'tata02,', 'tata03,', 'tata11,', 'tata12,', 'tata13,', 'tatac01,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52503%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_7a');".format(r2, result1[0]))
-                con.commit()
-                # Row 7 column 1 FWSM timeout breakdown 1 GT 61491500050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('tata01,', 'tata02,', 'tata03,', 'tata11,', 'tata12,', 'tata13,', 'tatac01,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52503%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_7a';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 7 column 2 FWSM timeout breakdown 2 GT 61491500050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('ibasis01,', 'ibasis02,', 'ibasis03,', 'ibasis11,', 'ibasis12,', 'ibasis13,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52503%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_7b');".format(r2, result1[0]))
-                con.commit()
-                # Row 7 column 2 FWSM timeout breakdown 2 GT 61491500050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('ibasis01,', 'ibasis02,', 'ibasis03,', 'ibasis11,', 'ibasis12,', 'ibasis13,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52503%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_7b';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 7 column 3 FWSM timeout breakdown 3 GT 61491500050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('comfone01,', 'comfone02,', 'comfone03,', 'comfone11,', 'comfone12,', 'comfone13,', 'comfonec01,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52503%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_7c');".format(r2, result1[0]))
-                con.commit()
-                # Row 7 column 3 FWSM timeout breakdown 3 GT 61491500050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('comfone01,', 'comfone02,', 'comfone03,', 'comfone11,', 'comfone12,', 'comfone13,', 'comfonec01,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52503%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_7c';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 7 column 4 FWSM timeout breakdown 4 GT 61491500050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('bics01,', 'bics02,', 'bics03,', 'bics11,', 'bics12,', 'bics13,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52503%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_7d');".format(r2, result1[0]))
-                con.commit()
-                # Row 7 column 3 FWSM timeout breakdown 3 GT 61491500050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('bics01,', 'bics02,', 'bics03,', 'bics11,', 'bics12,', 'bics13,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52503%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_7d';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 8 column 1 FWSM timeout breakdown 1 GT 3197015001050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('tata01,', 'tata02,', 'tata03,', 'tata11,', 'tata12,', 'tata13,', 'tatac01,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52505%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_8a');".format(r2, result1[0]))
-                con.commit()
-                # Row 8 column 1 FWSM timeout breakdown 1 GT 3197015001050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('tata01,', 'tata02,', 'tata03,', 'tata11,', 'tata12,', 'tata13,', 'tatac01,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52505%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_8a';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 8 column 2 FWSM timeout breakdown 2 GT 3197015001050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('ibasis01,', 'ibasis02,', 'ibasis03,', 'ibasis11,', 'ibasis12,', 'ibasis13,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52505%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_8b');".format(r2, result1[0]))
-                con.commit()
-                # Row 8 column 2 FWSM timeout breakdown 2 GT 3197015001050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('ibasis01,', 'ibasis02,', 'ibasis03,', 'ibasis11,', 'ibasis12,', 'ibasis13,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52505%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_8b';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 8 column 3 FWSM timeout breakdown 3 GT 3197015001050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('comfone01,', 'comfone02,', 'comfone03,', 'comfone11,', 'comfone12,', 'comfone13,', 'comfonec01,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52505%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_8c');".format(r2, result1[0]))
-                con.commit()
-                # Row 8 column 3 FWSM timeout breakdown 3 GT 3197015001050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('comfone01,', 'comfone02,', 'comfone03,', 'comfone11,', 'comfone12,', 'comfone13,', 'comfonec01,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52505%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_8c';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 8 column 4 FWSM timeout breakdown 4 GT 3197015001050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('bics01,', 'bics02,', 'bics03,', 'bics11,', 'bics12,', 'bics13,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52505%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_8d');".format(r2, result1[0]))
-                con.commit()
-                # Row 8 column 4 FWSM timeout breakdown 4 GT 3197015001050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '3197015001050,' and networkid IN ('bics01,', 'bics02,', 'bics03,', 'bics11,', 'bics12,', 'bics13,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52505%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_8d';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 9 column 1 FWSM timeout breakdown 1 GT 61491500050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('tata01,', 'tata02,', 'tata03,', 'tata11,', 'tata12,', 'tata13,', 'tatac01,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52505%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_9a');".format(r2, result1[0]))
-                con.commit()
-                # Row 9 column 1 FWSM timeout breakdown 1 GT 61491500050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('tata01,', 'tata02,', 'tata03,', 'tata11,', 'tata12,', 'tata13,', 'tatac01,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52505%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_9a';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 9 column 2 FWSM timeout breakdown 2 GT 61491500050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('ibasis01,', 'ibasis02,', 'ibasis03,', 'ibasis11,', 'ibasis12,', 'ibasis13,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52505%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_9b');".format(r2, result1[0]))
-                con.commit()
-                # Row 9 column 2 FWSM timeout breakdown 2 GT 61491500050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('ibasis01,', 'ibasis02,', 'ibasis03,', 'ibasis11,', 'ibasis12,', 'ibasis13,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52505%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_9b';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 9 column 3 FWSM timeout breakdown 3 GT 61491500050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('comfone01,', 'comfone02,', 'comfone03,', 'comfone11,', 'comfone12,', 'comfone13,', 'comfonec01,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52505%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_9c');".format(r2, result1[0]))
-                con.commit()
-                # Row 9 column 3 FWSM timeout breakdown 3 GT 61491500050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('comfone01,', 'comfone02,', 'comfone03,', 'comfone11,', 'comfone12,', 'comfone13,', 'comfonec01,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52505%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_9c';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Row 9 column 4 FWSM timeout breakdown 4 GT 61491500050
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('bics01,', 'bics02,', 'bics03,', 'bics11,', 'bics12,', 'bics13,') and error_msg = 'onDialogTimeoutafterMtForwardSMRequest' and imsi like '52505%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("insert into crm_row1_1 (time, total, success, failed, user_id) VALUES ('{}', '{}', '', '', 'sg_9d');".format(r2, result1[0]))
-                con.commit()
-                # Row 9 column 4 FWSM timeout breakdown 4 GT 61491500050 ErrorsmDeliveryFailureafterMtForwardSMRequest
-                cur.execute("SELECT count(*) FROM crm_cdrprocess where time like '{}%' and msisdn like '{}%' and gt = '61491500050,' and networkid IN ('bics01,', 'bics02,', 'bics03,', 'bics11,', 'bics12,', 'bics13,') and error_msg = 'ErrorsmDeliveryFailureafterMtForwardSMRequest:' and imsi like '52505%'".format(r2, ccsg))  # Query total
-                result1 = cur.fetchone()
-                cur.execute("UPDATE crm_row1_1 SET failed = '{}' WHERE time like '{}%' and user_id = 'sg_9d';".format(result1[0], r2))  # A bit of dirty solution. It error was added later and updated into the failed field.
-                con.commit()
-
-                # Insert into crm_cdrprocess(date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) values('', '', '6511111111', 'failed,', '3197015001050,', 'tata01,', '', '', '5250111111111', 'onDialogTimeoutafterMtForwardSMRequest')
-
-            cur.close()
+        # elif request.POST.get("insertDB") == 'insertDB':
+        #     insertDB = request.POST.get("insertDB")
+        #     con = sqlite3.connect('db.sqlite3')
+        #     cur = con.cursor()
+        #
+        #     # DB_mode
+        #     insert = 'insert'
+        #     update = 'update'
+        #     updateMtFailed = 'updateMtFailed'
+        #     updateMtFwFailed = 'updateMtFwFailed'
+        #     updateMtFailure = 'updateMtFailure'
+        #     insertSriFB = 'insertSriFB'
+        #     insertMtFB = 'insertMtFB'
+        #     updateMtFB = 'updateMtFB'
+        #     insertmt = 'insertmt'
+        #     updateSuc = 'updateSuc'
+        #     updateFail = 'updateFail'
+        #     insertsgsrito = 'insertsgsrito'
+        #     insertSriTimeOut = 'insertSriTimeOut'
+        #     insertMtFail = 'insertMtFail'
+        #     updateMtFail = 'updateMtFail'
+        #     updateSriTimeOut = 'updateSriTimeOut'
+        #     insertMtTimeOut = 'insertMtTimeOut'
+        #     updateMtSysFail = 'updateMtSysFail'
+        #
+        #     insert1gt = 'insert1gt'
+        #     insert2gt = 'insert2gt'
+        #
+        #
+        #     ccsg = '65'
+        #     ccms = '91'
+        #     ccfb = '91'
+        #
+        #     gt_sg = '3197015001050,', '61491500050,'
+        #     gt_sg1 = '3197015001050,'
+        #     gt_sg2 = '61491500050,'
+        #
+        #     gt_6995 = '3197015001050,'
+        #     gt_6994 = '3197015001052,'
+        #     gt_6908 = '3197015001051,'
+        #     gt_6909 = '3197015001053,'
+        #     gt_dummy = 'dummy'
+        #
+        #     smsc = 'smsc-1-eu1,', 'smsc-2-eu1,', 'smsc-1-eu4,', 'smsc-2-eu4,'
+        #     smsc1 = 'smsc-1-eu1,'
+        #     smsc2 = 'smsc-2-eu1,'
+        #     smsc3 = 'smsc-1-eu4,'
+        #     smsc4 = 'smsc-2-eu4,'
+        #     smscDummy = 'smscDummy'
+        #
+        #     system1 = 'smsc-1-eu1,'
+        #     system2 = 'smsc-2-eu1,'
+        #     system3 = 'smsc-1-eu4,'
+        #     system4 = 'smsc-2-eu4,'
+        #     system5 = 'smsc-1-eu1,', 'smsc-2-eu1,', 'smsc-1-eu4,', 'smsc-2-eu4,'
+        #     system6 = 'smsc-2-eu4,', 'smsc-2-eu4,', 'smsc-2-eu4,', 'smsc-2-eu4,'
+        #     system7 = 'smsc-2-eu1,', 'smsc-2-eu1,', 'smsc-2-eu1,', 'smsc-2-eu1,'
+        #
+        #     systemDummy = 'dummy'
+        #
+        #     success = 'success,'
+        #     partial = 'partial,'
+        #     failed = 'failed,'
+        #     temp_failed = 'temp_failed,'
+        #
+        #     statTotal = """'failed,', 'success,', 'temp_failed,'"""
+        #     statSuccess = """'success,'"""
+        #     statFailed = """'failed,', 'temp_failed,'"""
+        #
+        #     statusTotal = 'failed,', 'success,', 'temp_failed,'
+        #     statusSuccess = 'success,', 'dummy', 'dummy'        #2x dummy
+        #     statusFailed = 'failed,', 'temp_failed,', 'dummy'   #1x dummy
+        #     statusDummy = 'dummy', 'dummy', 'dummy'             #3x dummy
+        #
+        #     imsi1 = '52501'
+        #     imsi2 = '52503'
+        #     imsi3 = '52505'
+        #     imsi7 = '4058'
+        #     imsiDummy = 'dummy'
+        #
+        #
+        #     tata = 'tata01,', 'tata02,', 'tata03,', 'tata11,', 'tata12,', 'tata13,', 'tatac01,'
+        #     ibasis = 'ibasis01,', 'ibasis02,', 'ibasis03,', 'ibasis11,', 'ibasis12,', 'ibasis13,', 'ibasisc01,'
+        #     comfone = 'comfone01,', 'comfone02,', 'comfone03,', 'comfone11,', 'comfone12,', 'comfone13,', 'comfonec01,'
+        #     bics = 'bics01,', 'bics02,', 'bics03,', 'bics11,', 'bics12,', 'bics13,', 'bicsc01,'
+        #
+        #     networkidTATA = 'tata01,', 'tata02,', 'tata03,', 'tata11,', 'tata12,', 'tata13,', 'tatac01,'
+        #     networkidibasis = 'ibasis01,', 'ibasis02,', 'ibasis03,', 'ibasis11,', 'ibasis12,', 'ibasis13,', 'ibasisc01,'
+        #     networkidComfone = 'comfone01,', 'comfone02,', 'comfone03,', 'comfone11,', 'comfone12,', 'comfone13,', 'comfonec01,'
+        #     networkidBics = 'bics01,', 'bics02,', 'bics03,', 'bics11,', 'bics12,', 'bics13,', 'bicsc01,'
+        #     networkidDummy = 'dummy'
+        #
+        #     gtsg = '3197015001050,', '61491500050,'
+        #     gtsg1 = '3197015001050,', '3197015001050,'
+        #     gtsg2 = '61491500050,', '61491500050,'
+        #
+        #     gt6995 = '3197015001050,', '3197015001050,'
+        #     gt6994 = '3197015001052,', '3197015001052,'
+        #     gt6908 = '3197015001051,', '3197015001051,'
+        #     gt6909 = '3197015001053,', '3197015001053,'
+        #
+        #     error_msg = 'error_msg'
+        #
+        #     db_err_field = 'db_err_field'
+        #
+        #     s1 = list2hourv2()
+        #     print ("effe testen {}".format(s1))
+        #
+        #     r1 = list2hourv2()
+        #     for x in r1:
+        #         # Row 1
+        #         r2 = ("{}:{}".format(x[0], x[1]))
+        #         print (r2)
+        #
+        #         # Row 1 column 1 for Generic total, success, failed v3
+        #         GenericTotal(insert, gtsg, r2, ccsg, statusTotal, db_err_field, systemDummy, imsiDummy, networkidDummy, error_msg, 'sg_10')
+        #         GenericTotal(updateSuc, gtsg, r2, ccsg, statusSuccess, 'success', systemDummy, imsiDummy, networkidDummy, error_msg, 'sg_10')
+        #         GenericTotal(updateFail, gtsg, r2, ccsg, statusFailed, 'failed1', systemDummy, imsiDummy, networkidDummy, error_msg, 'sg_10')
+        #
+        #         # Row 1 column 2 All MNO SRI timeouts
+        #         GenericTotal(updateMtFailed, gtsg, r2, ccsg, statusDummy, 'failed2', systemDummy, imsiDummy, networkidDummy, 'onDialogTimeoutafterSRIRequest', 'sg_10')
+        #
+        #         # Row 1 column 3 fwsm timeout and SystemFailed for SingTel
+        #         GenericTotal(updateMtFwFailed, gtsg, r2, ccsg, statusDummy, 'failed3', systemDummy, imsi1, networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_10')
+        #         GenericTotal(updateMtFwFailed, gtsg, r2, ccsg, statusDummy, 'failed4', systemDummy, imsi1, networkidDummy, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_10')
+        #
+        #         # Row 1 column 3 fwsm timeout and SystemFailed for M1
+        #         GenericTotal(updateMtFwFailed, gtsg, r2, ccsg, statusDummy, 'failed5', systemDummy, imsi2, networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_10')
+        #         GenericTotal(updateMtFwFailed, gtsg, r2, ccsg, statusDummy, 'failed6', systemDummy, imsi2, networkidDummy, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_10')
+        #
+        #         # Row 1 column 3 fwsm timeout and SystemFailed for StarHub
+        #         GenericTotal(updateMtFwFailed, gtsg, r2, ccsg, statusDummy, 'failed7', systemDummy, imsi3, networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_10')
+        #         GenericTotal(updateMtFwFailed, gtsg, r2, ccsg, statusDummy, 'failed8', systemDummy, imsi3, networkidDummy, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_10')
+        #
+        #         # Row 2 -- SRI timeout -- GT 3197015001050 -- 1 Insert, 3 Update
+        #         GenericTotal(insertSriTimeOut, gtsg1, r2, ccsg, statusDummy, 'failed1', systemDummy, imsiDummy, networkidTATA, 'onDialogTimeoutafterSRIRequest', 'sg_11')
+        #         GenericTotal(updateSriTimeOut, gtsg1, r2, ccsg, statusDummy, 'failed2', systemDummy, imsiDummy, networkidibasis, 'onDialogTimeoutafterSRIRequest', 'sg_11')
+        #         GenericTotal(updateSriTimeOut, gtsg1, r2, ccsg, statusDummy, 'failed3', systemDummy, imsiDummy, networkidComfone, 'onDialogTimeoutafterSRIRequest', 'sg_11')
+        #         GenericTotal(updateSriTimeOut, gtsg1, r2, ccsg, statusDummy, 'failed4', systemDummy, imsiDummy, networkidBics, 'onDialogTimeoutafterSRIRequest', 'sg_11')
+        #
+        #         # Row 3 -- SRI timeout -- GT 61491500050 -- 1 Insert, 3 Update
+        #         GenericTotal(insertSriTimeOut, gtsg2, r2, ccsg, statusDummy, 'failed1', systemDummy, imsiDummy, networkidTATA, 'onDialogTimeoutafterSRIRequest', 'sg_12')
+        #         GenericTotal(updateSriTimeOut, gtsg2, r2, ccsg, statusDummy, 'failed2', systemDummy, imsiDummy, networkidibasis, 'onDialogTimeoutafterSRIRequest', 'sg_12')
+        #         GenericTotal(updateSriTimeOut, gtsg2, r2, ccsg, statusDummy, 'failed3', systemDummy, imsiDummy, networkidComfone, 'onDialogTimeoutafterSRIRequest', 'sg_12')
+        #         GenericTotal(updateSriTimeOut, gtsg2, r2, ccsg, statusDummy, 'failed4', systemDummy, imsiDummy, networkidBics, 'onDialogTimeoutafterSRIRequest', 'sg_12')
+        #
+        #         # Row 4 -- FWSM failure -- GT 3197015001050 -- 1 Insert, 7 Updates
+        #         GenericTotal(insertMtFail, gtsg1, r2, ccsg, statusDummy, 'failed1', systemDummy, imsi1, networkidTATA, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_13')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed2', systemDummy, imsi1, networkidTATA, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_13')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed3', systemDummy, imsi1, networkidibasis, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_13')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed4', systemDummy, imsi1, networkidibasis, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_13')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed5', systemDummy, imsi1, networkidComfone, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_13')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed6', systemDummy, imsi1, networkidComfone, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_13')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed7', systemDummy, imsi1, networkidBics, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_13')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed8', systemDummy, imsi1, networkidBics, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_13')
+        #
+        #
+        #         # Row 5 -- FWSM failure -- GT 61491500050 -- 1 Insert, 7 Updates
+        #         GenericTotal(insertMtFail, gtsg2, r2, ccsg, statusDummy, 'failed1', systemDummy, imsi1, networkidTATA, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_14')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed2', systemDummy, imsi1, networkidTATA, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_14')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed3', systemDummy, imsi1, networkidibasis, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_14')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed4', systemDummy, imsi1, networkidibasis, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_14')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed5', systemDummy, imsi1, networkidComfone, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_14')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed6', systemDummy, imsi1, networkidComfone, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_14')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed7', systemDummy, imsi1, networkidBics, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_14')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed8', systemDummy, imsi1, networkidBics, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_14')
+        #
+        #
+        #         # Row 6 -- FWSM failure -- GT 3197015001050 -- 1 Insert, 7 Updates
+        #         GenericTotal(insertMtFail, gtsg1, r2, ccsg, statusDummy, 'failed1', systemDummy, imsi2, networkidTATA, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_15')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed2', systemDummy, imsi2, networkidTATA, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_15')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed3', systemDummy, imsi2, networkidibasis, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_15')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed4', systemDummy, imsi2, networkidibasis, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_15')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed5', systemDummy, imsi2, networkidComfone, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_15')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed6', systemDummy, imsi2, networkidComfone, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_15')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed7', systemDummy, imsi2, networkidBics, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_15')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed8', systemDummy, imsi2, networkidBics, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_15')
+        #
+        #         # Row 7 -- FWSM failure -- GT 61491500050 -- 1 Insert, 7 Updates
+        #         GenericTotal(insertMtFail, gtsg2, r2, ccsg, statusDummy, 'failed1', systemDummy, imsi2, networkidTATA, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_16')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed2', systemDummy, imsi2, networkidTATA, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_16')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed3', systemDummy, imsi2, networkidibasis, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_16')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed4', systemDummy, imsi2, networkidibasis, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_16')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed5', systemDummy, imsi2, networkidComfone, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_16')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed6', systemDummy, imsi2, networkidComfone, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_16')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed7', systemDummy, imsi2, networkidBics, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_16')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed8', systemDummy, imsi2, networkidBics, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_16')
+        #
+        #         # Row 8 -- FWSM failure -- GT 3197015001050 -- 1 Insert, 7 Updates
+        #         GenericTotal(insertMtFail, gtsg1, r2, ccsg, statusDummy, 'failed1', systemDummy, imsi3, networkidTATA, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_17')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed2', systemDummy, imsi3, networkidTATA, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_17')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed3', systemDummy, imsi3, networkidibasis, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_17')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed4', systemDummy, imsi3, networkidibasis, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_17')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed5', systemDummy, imsi3, networkidComfone, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_17')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed6', systemDummy, imsi3, networkidComfone, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_17')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed7', systemDummy, imsi3, networkidBics, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_17')
+        #         GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed8', systemDummy, imsi3, networkidBics, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_17')
+        #
+        #         # Row 9 -- FWSM failure -- GT 61491500050 -- 1 Insert, 7 Updates
+        #         GenericTotal(insertMtFail, gtsg2, r2, ccsg, statusDummy, 'failed1', systemDummy, imsi3, networkidTATA, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_18')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed2', systemDummy, imsi3, networkidTATA, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_18')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed3', systemDummy, imsi3, networkidibasis, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_18')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed4', systemDummy, imsi3, networkidibasis, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_18')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed5', systemDummy, imsi3, networkidComfone, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_18')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed6', systemDummy, imsi3, networkidComfone, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_18')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed7', systemDummy, imsi3, networkidBics, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_18')
+        #         GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed8', systemDummy, imsi3, networkidBics, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_18')
+        #
+        #
+        #
+        #
+        #
+        #
+        #         # FaceBook Row 1
+        #         GenericTotal(insert, gt6994, r2, ccfb, statusTotal, db_err_field, systemDummy, imsiDummy, networkidDummy, error_msg, 'fb_1')
+        #         GenericTotal(updateSuc, gt6994, r2, ccfb, statusSuccess, 'success', systemDummy, imsiDummy, networkidDummy, error_msg, 'fb_1')
+        #         GenericTotal(updateFail, gt6994, r2, ccfb, statusFailed, 'failed1', systemDummy, imsiDummy, networkidDummy, error_msg, 'fb_1')
+        #
+        #         # Row 1 column 2 -- SRI Failure -- Primary smsc-2-eu4 -- GT 3197015001052
+        #         GenericTotal(updateMtFailure, gt6994, r2, ccfb, statusDummy, 'failed2', system6, imsiDummy, networkidDummy, 'onDialogTimeoutafterSRIRequest', 'fb_1')
+        #
+        #         # Row 1 column 3 -- FWSM Failure -- Primary smsc-2-eu4 -- GT 3197015001052
+        #         GenericTotal(updateMtFailure, gt6994, r2, ccfb, statusDummy, 'failed3', system6, imsiDummy, networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'fb_1')
+        #         GenericTotal(updateMtFailure, gt6994, r2, ccfb, statusDummy, 'failed4', system6, imsiDummy, networkidDummy, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'fb_1')
+        #
+        #         # Row 1 column 4 -- SRI Failure -- Failover smsc-2-eu1 -- GT 3197015001052
+        #         GenericTotal(updateMtFailure, gt6994, r2, ccfb, statusDummy, 'failed5', system7, imsiDummy, networkidDummy, 'onDialogTimeoutafterSRIRequest', 'fb_1')
+        #
+        #         # Row 1 column 5 -- FWSM Failure -- Failover smsc-2-eu1 -- GT 3197015001052
+        #         GenericTotal(updateMtFailure, gt6994, r2, ccfb, statusDummy, 'failed6', system7, imsiDummy, networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'fb_1')
+        #         GenericTotal(updateMtFailure, gt6994, r2, ccfb, statusDummy, 'failed7', system7, imsiDummy, networkidDummy, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'fb_1')
+        #
+        #
+        #         # FaceBook Row 2
+        #         GenericTotal(insert, gt6995, r2, ccfb, statusTotal, db_err_field, systemDummy, imsiDummy, networkidDummy, error_msg, 'fb_2')
+        #         GenericTotal(updateSuc, gt6995, r2, ccfb, statusSuccess, 'success', systemDummy, imsiDummy, networkidDummy, error_msg, 'fb_2')
+        #         GenericTotal(updateFail, gt6995, r2, ccfb, statusFailed, 'failed1', systemDummy, imsiDummy, networkidDummy, error_msg, 'fb_2')
+        #
+        #         # Row 2 column 2 -- SRI Failure -- Primary smsc-2-eu1 -- GT 3197015001050
+        #         GenericTotal(updateMtFailure, gt6995, r2, ccfb, statusDummy, 'failed2', system7, imsiDummy, networkidDummy, 'onDialogTimeoutafterSRIRequest', 'fb_2')
+        #
+        #         # Row 2 column 3 -- FWSM Failure -- Primary smsc-2-eu1 -- GT 3197015001050
+        #         GenericTotal(updateMtFailure, gt6995, r2, ccfb, statusDummy, 'failed3', system7, imsiDummy, networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'fb_2')
+        #         GenericTotal(updateMtFailure, gt6995, r2, ccfb, statusDummy, 'failed4', system7, imsiDummy, networkidDummy, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'fb_2')
+        #
+        #         # Row 2 column 4 -- SRI Failure -- Failover smsc-2-eu4 -- GT 3197015001050
+        #         GenericTotal(updateMtFailure, gt6995, r2, ccfb, statusDummy, 'failed5', system6, imsiDummy, networkidDummy, 'onDialogTimeoutafterSRIRequest', 'fb_2')
+        #
+        #         # Row 2 column 5 -- FWSM Failure -- Failover smsc-2-eu1 -- GT 3197015001050
+        #         GenericTotal(updateMtFailure, gt6995, r2, ccfb, statusDummy, 'failed6', system6, imsiDummy, networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'fb_2')
+        #         GenericTotal(updateMtFailure, gt6995, r2, ccfb, statusDummy, 'failed7', system6, imsiDummy, networkidDummy, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'fb_2')
+        #
+        #         # FaceBook Row 3
+        #         GenericTotal(insert, gt6908, r2, ccfb, statusTotal, db_err_field, systemDummy, imsiDummy, networkidDummy, error_msg, 'fb_3')
+        #         GenericTotal(updateSuc, gt6908, r2, ccfb, statusSuccess, 'success', systemDummy, imsiDummy, networkidDummy, error_msg, 'fb_3')
+        #         GenericTotal(updateFail, gt6908, r2, ccfb, statusFailed, 'failed1', systemDummy, imsiDummy, networkidDummy, error_msg, 'fb_3')
+        #
+        #         # Row 3 column 2 -- SRI Failure -- All SMSCs -- GT 3197015001051
+        #         GenericTotal(updateMtFailure, gt6908, r2, ccfb, statusDummy, 'failed2', system5, imsiDummy, networkidDummy, 'onDialogTimeoutafterSRIRequest', 'fb_3')
+        #
+        #         # Row 3 column 3 -- FWSM Failure -- All SMSCs -- GT 3197015001051
+        #         GenericTotal(updateMtFailure, gt6908, r2, ccfb, statusDummy, 'failed3', system5, imsiDummy, networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'fb_3')
+        #         GenericTotal(updateMtFailure, gt6908, r2, ccfb, statusDummy, 'failed4', system5, imsiDummy, networkidDummy, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'fb_3')
+        #
+        #         # FaceBook Row 4
+        #         GenericTotal(insert, gt6909, r2, ccfb, statusTotal, db_err_field, systemDummy, imsiDummy, networkidDummy, error_msg, 'fb_4')
+        #         GenericTotal(updateSuc, gt6909, r2, ccfb, statusSuccess, 'success', systemDummy, imsiDummy, networkidDummy, error_msg, 'fb_4')
+        #         GenericTotal(updateFail, gt6909, r2, ccfb, statusFailed, 'failed1', systemDummy, imsiDummy, networkidDummy, error_msg, 'fb_4')
+        #
+        #         # Row 4 column 2 -- SRI Failure -- All SMSCs -- GT 3197015001053
+        #         GenericTotal(updateMtFailure, gt6909, r2, ccfb, statusDummy, 'failed2', system5, imsiDummy, networkidDummy, 'onDialogTimeoutafterSRIRequest', 'fb_4')
+        #
+        #         # Row 4 column 3 -- FWSM Failure -- All SMSCs -- GT 3197015001053
+        #         GenericTotal(updateMtFailure, gt6909, r2, ccfb, statusDummy, 'failed3', system5, imsiDummy, networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'fb_4')
+        #         GenericTotal(updateMtFailure, gt6909, r2, ccfb, statusDummy, 'failed4', system5, imsiDummy, networkidDummy, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'fb_4')
+        #
+        #
+        #
+        #
+        #     cur.close()
 
 
         else:
@@ -705,20 +496,20 @@ def form_submit(request):
                 p = Popen(["ssh","{}".format(my_new_smsc),"python","/home/kennyC/sms/smsc_script_v4.py","-s","{}".format(my_new_date)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
                 output, errors = p.communicate()
-                
+
                 try:
 
                     list = []
-                    st = " ".join(output.split('\n')) 
-                    st = st.split(' ') 
-                
+                    st = " ".join(output.split('\n'))
+                    st = st.split(' ')
+
                     it = iter(st) #https://stackoverflow.com/questions/16789776/iterating-over-two-values-of-a-list-at-a-time-in-python
                     for a, b, c, d, e, f, g, h, i, j in zip(*[iter(it)]*10):
                         print (a, b, c, d, e, f, g, h, i, j)
                         p = CdrProcess(
-                        msisdn="{}".format(a), 
-                        status="{}".format(b), 
-                        networkid="{}".format(c), 
+                        msisdn="{}".format(a),
+                        status="{}".format(b),
+                        networkid="{}".format(c),
                         date="{}".format(d),
                         time="{}".format(e),
                         gt="{}".format(f),
@@ -736,20 +527,20 @@ def form_submit(request):
                 p = Popen(["ssh","{}".format(my_new_smsc),"python","/home/kennyC/sms/smsc_script_v4.py","-s","{}".format(my_new_date)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
                 output, errors = p.communicate()
-                
+
                 try:
 
                     list = []
-                    st = " ".join(output.split('\n')) 
-                    st = st.split(' ') 
-                
+                    st = " ".join(output.split('\n'))
+                    st = st.split(' ')
+
                     it = iter(st) #https://stackoverflow.com/questions/16789776/iterating-over-two-values-of-a-list-at-a-time-in-python
                     for a, b, c, d, e, f, g, h, i, j in zip(*[iter(it)]*10):
                         print (a, b, c, d, e, f, g, h, i, j)
                         p = CdrProcess(
-                        msisdn="{}".format(a), 
-                        status="{}".format(b), 
-                        networkid="{}".format(c), 
+                        msisdn="{}".format(a),
+                        status="{}".format(b),
+                        networkid="{}".format(c),
                         date="{}".format(d),
                         time="{}".format(e),
                         gt="{}".format(f),
@@ -767,20 +558,20 @@ def form_submit(request):
                 p = Popen(["ssh","{}".format(my_new_smsc),"python","/home/kennyC/sms/smsc_script_v4.py","-s","{}".format(my_new_date)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
                 output, errors = p.communicate()
-                
+
                 try:
 
                     list = []
-                    st = " ".join(output.split('\n')) 
-                    st = st.split(' ') 
-                
+                    st = " ".join(output.split('\n'))
+                    st = st.split(' ')
+
                     it = iter(st) #https://stackoverflow.com/questions/16789776/iterating-over-two-values-of-a-list-at-a-time-in-python
                     for a, b, c, d, e, f, g, h, i, j in zip(*[iter(it)]*10):
                         print (a, b, c, d, e, f, g, h, i, j)
                         p = CdrProcess(
-                        msisdn="{}".format(a), 
-                        status="{}".format(b), 
-                        networkid="{}".format(c), 
+                        msisdn="{}".format(a),
+                        status="{}".format(b),
+                        networkid="{}".format(c),
                         date="{}".format(d),
                         time="{}".format(e),
                         gt="{}".format(f),
@@ -797,20 +588,20 @@ def form_submit(request):
                 p = Popen(["ssh","{}".format(my_new_smsc),"python","/home/kennyC/sms/smsc_script_v4.py","-s","{}".format(my_new_date)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
                 output, errors = p.communicate()
-                
+
                 try:
 
                     list = []
-                    st = " ".join(output.split('\n')) 
-                    st = st.split(' ') 
-                
+                    st = " ".join(output.split('\n'))
+                    st = st.split(' ')
+
                     it = iter(st) #https://stackoverflow.com/questions/16789776/iterating-over-two-values-of-a-list-at-a-time-in-python
                     for a, b, c, d, e, f, g, h, i, j in zip(*[iter(it)]*10):
                         print (a, b, c, d, e, f, g, h, i, j)
                         p = CdrProcess(
-                        msisdn="{}".format(a), 
-                        status="{}".format(b), 
-                        networkid="{}".format(c), 
+                        msisdn="{}".format(a),
+                        status="{}".format(b),
+                        networkid="{}".format(c),
                         date="{}".format(d),
                         time="{}".format(e),
                         gt="{}".format(f),
@@ -820,20 +611,372 @@ def form_submit(request):
                         error_msg="{}".format(j),
                         )
                         p.save()
-                        # print (p)
-
-                        # run sc
 
 
+                    con = sqlite3.connect('db.sqlite3')    # From here read from crm_cdrprocess and inseert into crm_cdrtable
+                    cur = con.cursor()
 
+                    # DB_mode
+                    insert = 'insert'
+                    update = 'update'
+                    updateMtFailed = 'updateMtFailed'
+                    updateMtFwFailed = 'updateMtFwFailed'
+                    updateMtFailure = 'updateMtFailure'
+                    insertSriFB = 'insertSriFB'
+                    insertMtFB = 'insertMtFB'
+                    updateMtFB = 'updateMtFB'
+                    insertmt = 'insertmt'
+                    updateSuc = 'updateSuc'
+                    updateFail = 'updateFail'
+                    insertsgsrito = 'insertsgsrito'
+                    insertSriTimeOut = 'insertSriTimeOut'
+                    insertMtFail = 'insertMtFail'
+                    updateMtFail = 'updateMtFail'
+                    updateSriTimeOut = 'updateSriTimeOut'
+                    insertMtTimeOut = 'insertMtTimeOut'
+                    updateMtSysFail = 'updateMtSysFail'
+
+                    insert1gt = 'insert1gt'
+                    insert2gt = 'insert2gt'
+
+                    ccsg = '65'
+                    ccms = '91'
+                    ccfb = '91'
+
+                    gt_sg = '3197015001050,', '61491500050,'
+                    gt_sg1 = '3197015001050,'
+                    gt_sg2 = '61491500050,'
+
+                    gt_6995 = '3197015001050,'
+                    gt_6994 = '3197015001052,'
+                    gt_6908 = '3197015001051,'
+                    gt_6909 = '3197015001053,'
+                    gt_dummy = 'dummy'
+
+                    smsc = 'smsc-1-eu1,', 'smsc-2-eu1,', 'smsc-1-eu4,', 'smsc-2-eu4,'
+                    smsc1 = 'smsc-1-eu1,'
+                    smsc2 = 'smsc-2-eu1,'
+                    smsc3 = 'smsc-1-eu4,'
+                    smsc4 = 'smsc-2-eu4,'
+                    smscDummy = 'smscDummy'
+
+                    system1 = 'smsc-1-eu1,'
+                    system2 = 'smsc-2-eu1,'
+                    system3 = 'smsc-1-eu4,'
+                    system4 = 'smsc-2-eu4,'
+                    system5 = 'smsc-1-eu1,', 'smsc-2-eu1,', 'smsc-1-eu4,', 'smsc-2-eu4,'
+                    system6 = 'smsc-2-eu4,', 'smsc-2-eu4,', 'smsc-2-eu4,', 'smsc-2-eu4,'
+                    system7 = 'smsc-2-eu1,', 'smsc-2-eu1,', 'smsc-2-eu1,', 'smsc-2-eu1,'
+
+                    systemDummy = 'dummy'
+
+                    success = 'success,'
+                    partial = 'partial,'
+                    failed = 'failed,'
+                    temp_failed = 'temp_failed,'
+
+                    statusTotal = 'failed,', 'success,', 'temp_failed,'
+                    statusSuccess = 'success,', 'dummy', 'dummy'  # 2x dummy
+                    statusFailed = 'failed,', 'temp_failed,', 'dummy'  # 1x dummy
+                    statusDummy = 'dummy', 'dummy', 'dummy'  # 3x dummy
+
+                    imsi1 = '52501'
+                    imsi2 = '52503'
+                    imsi3 = '52505'
+                    imsi7 = '4058'
+                    imsiDummy = 'dummy'
+
+                    tata = 'tata01,', 'tata02,', 'tata03,', 'tata11,', 'tata12,', 'tata13,', 'tatac01,'
+                    ibasis = 'ibasis01,', 'ibasis02,', 'ibasis03,', 'ibasis11,', 'ibasis12,', 'ibasis13,', 'ibasisc01,'
+                    comfone = 'comfone01,', 'comfone02,', 'comfone03,', 'comfone11,', 'comfone12,', 'comfone13,', 'comfonec01,'
+                    bics = 'bics01,', 'bics02,', 'bics03,', 'bics11,', 'bics12,', 'bics13,', 'bicsc01,'
+
+                    networkidTATA = 'tata01,', 'tata02,', 'tata03,', 'tata11,', 'tata12,', 'tata13,', 'tatac01,'
+                    networkidibasis = 'ibasis01,', 'ibasis02,', 'ibasis03,', 'ibasis11,', 'ibasis12,', 'ibasis13,', 'ibasisc01,'
+                    networkidComfone = 'comfone01,', 'comfone02,', 'comfone03,', 'comfone11,', 'comfone12,', 'comfone13,', 'comfonec01,'
+                    networkidBics = 'bics01,', 'bics02,', 'bics03,', 'bics11,', 'bics12,', 'bics13,', 'bicsc01,'
+                    networkidDummy = 'dummy'
+
+                    gtsg = '3197015001050,', '61491500050,'
+                    gtsg1 = '3197015001050,', '3197015001050,'
+                    gtsg2 = '61491500050,', '61491500050,'
+
+                    gt6995 = '3197015001050,', '3197015001050,'
+                    gt6994 = '3197015001052,', '3197015001052,'
+                    gt6908 = '3197015001051,', '3197015001051,'
+                    gt6909 = '3197015001053,', '3197015001053,'
+
+                    error_msg = 'error_msg'
+
+                    db_err_field = 'db_err_field'
+
+                    s1 = list2hourv2()
+                    print("effe testen {}".format(s1))
+
+                    r1 = list2hourv2()
+                    for x in r1:
+                        # Row 1
+                        r2 = ("{}:{}".format(x[0], x[1]))
+                        print(r2)
+
+                        # Row 1 column 1 for Generic total, success, failed v3
+                        GenericTotal(insert, gtsg, r2, ccsg, statusTotal, db_err_field, systemDummy, imsiDummy,
+                                     networkidDummy, error_msg, 'sg_10')
+                        GenericTotal(updateSuc, gtsg, r2, ccsg, statusSuccess, 'success', systemDummy, imsiDummy,
+                                     networkidDummy, error_msg, 'sg_10')
+                        GenericTotal(updateFail, gtsg, r2, ccsg, statusFailed, 'failed1', systemDummy, imsiDummy,
+                                     networkidDummy, error_msg, 'sg_10')
+
+                        # Row 1 column 2 All MNO SRI timeouts
+                        GenericTotal(updateMtFailed, gtsg, r2, ccsg, statusDummy, 'failed2', systemDummy, imsiDummy,
+                                     networkidDummy, 'onDialogTimeoutafterSRIRequest', 'sg_10')
+
+                        # Row 1 column 3 fwsm timeout and SystemFailed for SingTel
+                        GenericTotal(updateMtFwFailed, gtsg, r2, ccsg, statusDummy, 'failed3', systemDummy, imsi1,
+                                     networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_10')
+                        GenericTotal(updateMtFwFailed, gtsg, r2, ccsg, statusDummy, 'failed4', systemDummy, imsi1,
+                                     networkidDummy, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_10')
+
+                        # Row 1 column 3 fwsm timeout and SystemFailed for M1
+                        GenericTotal(updateMtFwFailed, gtsg, r2, ccsg, statusDummy, 'failed5', systemDummy, imsi2,
+                                     networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_10')
+                        GenericTotal(updateMtFwFailed, gtsg, r2, ccsg, statusDummy, 'failed6', systemDummy, imsi2,
+                                     networkidDummy, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_10')
+
+                        # Row 1 column 3 fwsm timeout and SystemFailed for StarHub
+                        GenericTotal(updateMtFwFailed, gtsg, r2, ccsg, statusDummy, 'failed7', systemDummy, imsi3,
+                                     networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_10')
+                        GenericTotal(updateMtFwFailed, gtsg, r2, ccsg, statusDummy, 'failed8', systemDummy, imsi3,
+                                     networkidDummy, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_10')
+
+                        # Row 2 -- SRI timeout -- GT 3197015001050 -- 1 Insert, 3 Update
+                        GenericTotal(insertSriTimeOut, gtsg1, r2, ccsg, statusDummy, 'failed1', systemDummy, imsiDummy,
+                                     networkidTATA, 'onDialogTimeoutafterSRIRequest', 'sg_11')
+                        GenericTotal(updateSriTimeOut, gtsg1, r2, ccsg, statusDummy, 'failed2', systemDummy, imsiDummy,
+                                     networkidibasis, 'onDialogTimeoutafterSRIRequest', 'sg_11')
+                        GenericTotal(updateSriTimeOut, gtsg1, r2, ccsg, statusDummy, 'failed3', systemDummy, imsiDummy,
+                                     networkidComfone, 'onDialogTimeoutafterSRIRequest', 'sg_11')
+                        GenericTotal(updateSriTimeOut, gtsg1, r2, ccsg, statusDummy, 'failed4', systemDummy, imsiDummy,
+                                     networkidBics, 'onDialogTimeoutafterSRIRequest', 'sg_11')
+
+                        # Row 3 -- SRI timeout -- GT 61491500050 -- 1 Insert, 3 Update
+                        GenericTotal(insertSriTimeOut, gtsg2, r2, ccsg, statusDummy, 'failed1', systemDummy, imsiDummy,
+                                     networkidTATA, 'onDialogTimeoutafterSRIRequest', 'sg_12')
+                        GenericTotal(updateSriTimeOut, gtsg2, r2, ccsg, statusDummy, 'failed2', systemDummy, imsiDummy,
+                                     networkidibasis, 'onDialogTimeoutafterSRIRequest', 'sg_12')
+                        GenericTotal(updateSriTimeOut, gtsg2, r2, ccsg, statusDummy, 'failed3', systemDummy, imsiDummy,
+                                     networkidComfone, 'onDialogTimeoutafterSRIRequest', 'sg_12')
+                        GenericTotal(updateSriTimeOut, gtsg2, r2, ccsg, statusDummy, 'failed4', systemDummy, imsiDummy,
+                                     networkidBics, 'onDialogTimeoutafterSRIRequest', 'sg_12')
+
+                        # Row 4 -- FWSM failure -- GT 3197015001050 -- 1 Insert, 7 Updates
+                        GenericTotal(insertMtFail, gtsg1, r2, ccsg, statusDummy, 'failed1', systemDummy, imsi1,
+                                     networkidTATA, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_13')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed2', systemDummy, imsi1,
+                                     networkidTATA, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_13')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed3', systemDummy, imsi1,
+                                     networkidibasis, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_13')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed4', systemDummy, imsi1,
+                                     networkidibasis, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_13')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed5', systemDummy, imsi1,
+                                     networkidComfone, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_13')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed6', systemDummy, imsi1,
+                                     networkidComfone, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_13')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed7', systemDummy, imsi1,
+                                     networkidBics, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_13')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed8', systemDummy, imsi1,
+                                     networkidBics, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_13')
+
+                        # Row 5 -- FWSM failure -- GT 61491500050 -- 1 Insert, 7 Updates
+                        GenericTotal(insertMtFail, gtsg2, r2, ccsg, statusDummy, 'failed1', systemDummy, imsi1,
+                                     networkidTATA, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_14')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed2', systemDummy, imsi1,
+                                     networkidTATA, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_14')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed3', systemDummy, imsi1,
+                                     networkidibasis, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_14')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed4', systemDummy, imsi1,
+                                     networkidibasis, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_14')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed5', systemDummy, imsi1,
+                                     networkidComfone, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_14')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed6', systemDummy, imsi1,
+                                     networkidComfone, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_14')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed7', systemDummy, imsi1,
+                                     networkidBics, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_14')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed8', systemDummy, imsi1,
+                                     networkidBics, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_14')
+
+                        # Row 6 -- FWSM failure -- GT 3197015001050 -- 1 Insert, 7 Updates
+                        GenericTotal(insertMtFail, gtsg1, r2, ccsg, statusDummy, 'failed1', systemDummy, imsi2,
+                                     networkidTATA, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_15')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed2', systemDummy, imsi2,
+                                     networkidTATA, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_15')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed3', systemDummy, imsi2,
+                                     networkidibasis, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_15')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed4', systemDummy, imsi2,
+                                     networkidibasis, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_15')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed5', systemDummy, imsi2,
+                                     networkidComfone, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_15')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed6', systemDummy, imsi2,
+                                     networkidComfone, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_15')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed7', systemDummy, imsi2,
+                                     networkidBics, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_15')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed8', systemDummy, imsi2,
+                                     networkidBics, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_15')
+
+                        # Row 7 -- FWSM failure -- GT 61491500050 -- 1 Insert, 7 Updates
+                        GenericTotal(insertMtFail, gtsg2, r2, ccsg, statusDummy, 'failed1', systemDummy, imsi2,
+                                     networkidTATA, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_16')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed2', systemDummy, imsi2,
+                                     networkidTATA, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_16')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed3', systemDummy, imsi2,
+                                     networkidibasis, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_16')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed4', systemDummy, imsi2,
+                                     networkidibasis, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_16')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed5', systemDummy, imsi2,
+                                     networkidComfone, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_16')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed6', systemDummy, imsi2,
+                                     networkidComfone, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_16')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed7', systemDummy, imsi2,
+                                     networkidBics, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_16')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed8', systemDummy, imsi2,
+                                     networkidBics, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_16')
+
+                        # Row 8 -- FWSM failure -- GT 3197015001050 -- 1 Insert, 7 Updates
+                        GenericTotal(insertMtFail, gtsg1, r2, ccsg, statusDummy, 'failed1', systemDummy, imsi3,
+                                     networkidTATA, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_17')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed2', systemDummy, imsi3,
+                                     networkidTATA, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_17')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed3', systemDummy, imsi3,
+                                     networkidibasis, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_17')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed4', systemDummy, imsi3,
+                                     networkidibasis, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_17')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed5', systemDummy, imsi3,
+                                     networkidComfone, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_17')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed6', systemDummy, imsi3,
+                                     networkidComfone, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_17')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed7', systemDummy, imsi3,
+                                     networkidBics, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_17')
+                        GenericTotal(updateMtFail, gtsg1, r2, ccsg, statusDummy, 'failed8', systemDummy, imsi3,
+                                     networkidBics, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_17')
+
+                        # Row 9 -- FWSM failure -- GT 61491500050 -- 1 Insert, 7 Updates
+                        GenericTotal(insertMtFail, gtsg2, r2, ccsg, statusDummy, 'failed1', systemDummy, imsi3,
+                                     networkidTATA, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_18')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed2', systemDummy, imsi3,
+                                     networkidTATA, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_18')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed3', systemDummy, imsi3,
+                                     networkidibasis, 'onDialogTimeoutafterMtForwardSMRequest', 'sg_18')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed4', systemDummy, imsi3,
+                                     networkidibasis, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_18')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed5', systemDummy, imsi3,
+                                     networkidComfone, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_18')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed6', systemDummy, imsi3,
+                                     networkidComfone, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_18')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed7', systemDummy, imsi3,
+                                     networkidBics, 'onDialogTimeoutafterMtForwardSMRequest:', 'sg_18')
+                        GenericTotal(updateMtFail, gtsg2, r2, ccsg, statusDummy, 'failed8', systemDummy, imsi3,
+                                     networkidBics, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'sg_18')
+
+                        # FaceBook Row 1
+                        GenericTotal(insert, gt6994, r2, ccfb, statusTotal, db_err_field, systemDummy, imsiDummy,
+                                     networkidDummy, error_msg, 'fb_1')
+                        GenericTotal(updateSuc, gt6994, r2, ccfb, statusSuccess, 'success', systemDummy, imsiDummy,
+                                     networkidDummy, error_msg, 'fb_1')
+                        GenericTotal(updateFail, gt6994, r2, ccfb, statusFailed, 'failed1', systemDummy, imsiDummy,
+                                     networkidDummy, error_msg, 'fb_1')
+
+                        # Row 1 column 2 -- SRI Failure -- Primary smsc-2-eu4 -- GT 3197015001052
+                        GenericTotal(updateMtFailure, gt6994, r2, ccfb, statusDummy, 'failed2', system6, imsiDummy,
+                                     networkidDummy, 'onDialogTimeoutafterSRIRequest', 'fb_1')
+
+                        # Row 1 column 3 -- FWSM Failure -- Primary smsc-2-eu4 -- GT 3197015001052
+                        GenericTotal(updateMtFailure, gt6994, r2, ccfb, statusDummy, 'failed3', system6, imsiDummy,
+                                     networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'fb_1')
+                        GenericTotal(updateMtFailure, gt6994, r2, ccfb, statusDummy, 'failed4', system6, imsiDummy,
+                                     networkidDummy, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'fb_1')
+
+                        # Row 1 column 4 -- SRI Failure -- Failover smsc-2-eu1 -- GT 3197015001052
+                        GenericTotal(updateMtFailure, gt6994, r2, ccfb, statusDummy, 'failed5', system7, imsiDummy,
+                                     networkidDummy, 'onDialogTimeoutafterSRIRequest', 'fb_1')
+
+                        # Row 1 column 5 -- FWSM Failure -- Failover smsc-2-eu1 -- GT 3197015001052
+                        GenericTotal(updateMtFailure, gt6994, r2, ccfb, statusDummy, 'failed6', system7, imsiDummy,
+                                     networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'fb_1')
+                        GenericTotal(updateMtFailure, gt6994, r2, ccfb, statusDummy, 'failed7', system7, imsiDummy,
+                                     networkidDummy, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'fb_1')
+
+                        # FaceBook Row 2
+                        GenericTotal(insert, gt6995, r2, ccfb, statusTotal, db_err_field, systemDummy, imsiDummy,
+                                     networkidDummy, error_msg, 'fb_2')
+                        GenericTotal(updateSuc, gt6995, r2, ccfb, statusSuccess, 'success', systemDummy, imsiDummy,
+                                     networkidDummy, error_msg, 'fb_2')
+                        GenericTotal(updateFail, gt6995, r2, ccfb, statusFailed, 'failed1', systemDummy, imsiDummy,
+                                     networkidDummy, error_msg, 'fb_2')
+
+                        # Row 2 column 2 -- SRI Failure -- Primary smsc-2-eu1 -- GT 3197015001050
+                        GenericTotal(updateMtFailure, gt6995, r2, ccfb, statusDummy, 'failed2', system7, imsiDummy,
+                                     networkidDummy, 'onDialogTimeoutafterSRIRequest', 'fb_2')
+
+                        # Row 2 column 3 -- FWSM Failure -- Primary smsc-2-eu1 -- GT 3197015001050
+                        GenericTotal(updateMtFailure, gt6995, r2, ccfb, statusDummy, 'failed3', system7, imsiDummy,
+                                     networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'fb_2')
+                        GenericTotal(updateMtFailure, gt6995, r2, ccfb, statusDummy, 'failed4', system7, imsiDummy,
+                                     networkidDummy, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'fb_2')
+
+                        # Row 2 column 4 -- SRI Failure -- Failover smsc-2-eu4 -- GT 3197015001050
+                        GenericTotal(updateMtFailure, gt6995, r2, ccfb, statusDummy, 'failed5', system6, imsiDummy,
+                                     networkidDummy, 'onDialogTimeoutafterSRIRequest', 'fb_2')
+
+                        # Row 2 column 5 -- FWSM Failure -- Failover smsc-2-eu1 -- GT 3197015001050
+                        GenericTotal(updateMtFailure, gt6995, r2, ccfb, statusDummy, 'failed6', system6, imsiDummy,
+                                     networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'fb_2')
+                        GenericTotal(updateMtFailure, gt6995, r2, ccfb, statusDummy, 'failed7', system6, imsiDummy,
+                                     networkidDummy, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'fb_2')
+
+                        # FaceBook Row 3
+                        GenericTotal(insert, gt6908, r2, ccfb, statusTotal, db_err_field, systemDummy, imsiDummy,
+                                     networkidDummy, error_msg, 'fb_3')
+                        GenericTotal(updateSuc, gt6908, r2, ccfb, statusSuccess, 'success', systemDummy, imsiDummy,
+                                     networkidDummy, error_msg, 'fb_3')
+                        GenericTotal(updateFail, gt6908, r2, ccfb, statusFailed, 'failed1', systemDummy, imsiDummy,
+                                     networkidDummy, error_msg, 'fb_3')
+
+                        # Row 3 column 2 -- SRI Failure -- All SMSCs -- GT 3197015001051
+                        GenericTotal(updateMtFailure, gt6908, r2, ccfb, statusDummy, 'failed2', system5, imsiDummy,
+                                     networkidDummy, 'onDialogTimeoutafterSRIRequest', 'fb_3')
+
+                        # Row 3 column 3 -- FWSM Failure -- All SMSCs -- GT 3197015001051
+                        GenericTotal(updateMtFailure, gt6908, r2, ccfb, statusDummy, 'failed3', system5, imsiDummy,
+                                     networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'fb_3')
+                        GenericTotal(updateMtFailure, gt6908, r2, ccfb, statusDummy, 'failed4', system5, imsiDummy,
+                                     networkidDummy, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'fb_3')
+
+                        # FaceBook Row 4
+                        GenericTotal(insert, gt6909, r2, ccfb, statusTotal, db_err_field, systemDummy, imsiDummy,
+                                     networkidDummy, error_msg, 'fb_4')
+                        GenericTotal(updateSuc, gt6909, r2, ccfb, statusSuccess, 'success', systemDummy, imsiDummy,
+                                     networkidDummy, error_msg, 'fb_4')
+                        GenericTotal(updateFail, gt6909, r2, ccfb, statusFailed, 'failed1', systemDummy, imsiDummy,
+                                     networkidDummy, error_msg, 'fb_4')
+
+                        # Row 4 column 2 -- SRI Failure -- All SMSCs -- GT 3197015001053
+                        GenericTotal(updateMtFailure, gt6909, r2, ccfb, statusDummy, 'failed2', system5, imsiDummy,
+                                     networkidDummy, 'onDialogTimeoutafterSRIRequest', 'fb_4')
+
+                        # Row 4 column 3 -- FWSM Failure -- All SMSCs -- GT 3197015001053
+                        GenericTotal(updateMtFailure, gt6909, r2, ccfb, statusDummy, 'failed3', system5, imsiDummy,
+                                     networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'fb_4')
+                        GenericTotal(updateMtFailure, gt6909, r2, ccfb, statusDummy, 'failed4', system5, imsiDummy,
+                                     networkidDummy, 'ErrorsmDeliveryFailureafterMtForwardSMRequest:', 'fb_4')
+
+                    cur.close()
                 except:
                     pass
-
             else:
                 pass
 
     count_total_smsc_2_eu4 = CdrProcess.objects.all().count()
-    
+
     context={
         'count_total_smsc_2_eu4' : count_total_smsc_2_eu4
         }
@@ -851,746 +994,9 @@ def cdr_detail_view(request):
     min5 = 5
 
     min = [0, 1, 2, 3, 4, 5]
-    
-    get_time = CdrProcess.objects.all().order_by("-id")[:1].values_list().get() #(1887655, '2021-02-23', '14:23:22.367,', '6592723109,', 'success,', '3197015001050,', '1003,', 'smsc-2-eu4')
-    get_time_join = (''.join(get_time[2])) #Get third element and make it to string 
-    final_time = ("{}".format(get_time_join[:5])) # Get 5 char from string = mm:ss
-    get_hour = ("{}".format(get_time_join[:3])) # Get 3 char from string = mm:
-  
 
 
-    total_min0_smsc_2_eu4 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", time__startswith="{}{}".format(get_hour, min0)).exclude(status__exact="partial,").count()
-    total_min1_smsc_2_eu4 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", time__startswith="{}{}".format(get_hour, min1)).exclude(status__exact="partial,").count()
-    total_min2_smsc_2_eu4 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", time__startswith="{}{}".format(get_hour, min2)).exclude(status__exact="partial,").count()
-    total_min3_smsc_2_eu4 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", time__startswith="{}{}".format(get_hour, min3)).exclude(status__exact="partial,").count()
-    total_min4_smsc_2_eu4 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", time__startswith="{}{}".format(get_hour, min4)).exclude(status__exact="partial,").count()
-    total_min5_smsc_2_eu4 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", time__startswith="{}{}".format(get_hour, min5)).exclude(status__exact="partial,").count()
-
-
-
-    success_min0_smsc_2_eu4 = CdrProcess.objects.filter(status__exact="success,", msisdn__startswith="65", system__exact="smsc-2-eu4,", time__startswith="{}{}".format(get_hour, min0)).count()
-    success_min1_smsc_2_eu4 = CdrProcess.objects.filter(status__exact="success,", msisdn__startswith="65", system__exact="smsc-2-eu4,", time__startswith="{}{}".format(get_hour, min1)).count()
-    success_min2_smsc_2_eu4 = CdrProcess.objects.filter(status__exact="success,", msisdn__startswith="65", system__exact="smsc-2-eu4,", time__startswith="{}{}".format(get_hour, min2)).count()
-    success_min3_smsc_2_eu4 = CdrProcess.objects.filter(status__exact="success,", msisdn__startswith="65", system__exact="smsc-2-eu4,", time__startswith="{}{}".format(get_hour, min3)).count()
-    success_min4_smsc_2_eu4 = CdrProcess.objects.filter(status__exact="success,", msisdn__startswith="65", system__exact="smsc-2-eu4,", time__startswith="{}{}".format(get_hour, min4)).count()
-    success_min5_smsc_2_eu4 = CdrProcess.objects.filter(status__exact="success,", msisdn__startswith="65", system__exact="smsc-2-eu4,", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-
-
-    failed_min0_smsc_2_eu4 = CdrProcess.objects.filter(Q(status__exact="failed,") |Q(status__exact="temp_failed,"), msisdn__startswith="65", system__exact="smsc-2-eu4,", time__startswith="{}{}".format(get_hour, min0)).count()
-    failed_min1_smsc_2_eu4 = CdrProcess.objects.filter(Q(status__exact="failed,") |Q(status__exact="temp_failed,"), msisdn__startswith="65", system__exact="smsc-2-eu4,", time__startswith="{}{}".format(get_hour, min1)).count()
-    failed_min2_smsc_2_eu4 = CdrProcess.objects.filter(Q(status__exact="failed,") |Q(status__exact="temp_failed,"), msisdn__startswith="65", system__exact="smsc-2-eu4,", time__startswith="{}{}".format(get_hour, min2)).count()
-    failed_min3_smsc_2_eu4 = CdrProcess.objects.filter(Q(status__exact="failed,") |Q(status__exact="temp_failed,"), msisdn__startswith="65", system__exact="smsc-2-eu4,", time__startswith="{}{}".format(get_hour, min3)).count()
-    failed_min4_smsc_2_eu4 = CdrProcess.objects.filter(Q(status__exact="failed,") |Q(status__exact="temp_failed,"), msisdn__startswith="65", system__exact="smsc-2-eu4,", time__startswith="{}{}".format(get_hour, min4)).count()
-    failed_min5_smsc_2_eu4 = CdrProcess.objects.filter(Q(status__exact="failed,") |Q(status__exact="temp_failed,"), msisdn__startswith="65", system__exact="smsc-2-eu4,", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-
-    count_success_smsc_2_eu4 = CdrProcess.objects.filter(status__exact="success,", msisdn__startswith="65", system__exact="smsc-2-eu4,").count()
-    count_temp_failed_smsc_2_eu4 = CdrProcess.objects.filter(status__exact="temp_failed,", msisdn__startswith="65", system__exact="smsc-2-eu4,").count()
-    count_failed_smsc_2_eu4 =  CdrProcess.objects.filter(status__exact="failed,", msisdn__startswith="65", system__exact="smsc-2-eu4,").count()
-    count_total_smsc_2_eu4  = CdrProcess.objects.all().count()
-
-
-    # SRI part
-
-    sri_min0_smsc_2_eu4 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    sri_min1_smsc_2_eu4 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    sri_min2_smsc_2_eu4 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    sri_min3_smsc_2_eu4 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    sri_min4_smsc_2_eu4 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    sri_min5_smsc_2_eu4 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-    # MTFS failure for 52501 Singtel
-
-    mtfs_min0_smsc_2_eu4 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_min1_smsc_2_eu4 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_min2_smsc_2_eu4 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_min3_smsc_2_eu4 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_min4_smsc_2_eu4 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_min5_smsc_2_eu4 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-    
-
-
-    # MTFS failure for 52505 Singtel
-
-    mtfs_min0_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_min1_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_min2_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_min3_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_min4_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_min5_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-
-    # MTFS failure for 52503 M1
-
-    mtfs_52503_min0_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_52503_min1_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_52503_min2_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_52503_min3_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_52503_min4_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_52503_min5_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-
-
-    #SRI breakdown 1 3197015001050
-
-    sri_gt1_1001_min0_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1001', time__startswith="{}{}".format(get_hour, min0)).count()
-    sri_gt1_1001_min1_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1001', time__startswith="{}{}".format(get_hour, min1)).count()
-    sri_gt1_1001_min2_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1001', time__startswith="{}{}".format(get_hour, min2)).count()
-    sri_gt1_1001_min3_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1001', time__startswith="{}{}".format(get_hour, min3)).count()
-    sri_gt1_1001_min4_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1001', time__startswith="{}{}".format(get_hour, min4)).count()
-    sri_gt1_1001_min5_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1001', time__startswith="{}{}".format(get_hour, min5)).count()
-
-
- #SRI breakdown 2 3197015001050
-
-    sri_gt1_1002_min0_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1002', time__startswith="{}{}".format(get_hour, min0)).count()
-    sri_gt1_1002_min1_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1002', time__startswith="{}{}".format(get_hour, min1)).count()
-    sri_gt1_1002_min2_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1002', time__startswith="{}{}".format(get_hour, min2)).count()
-    sri_gt1_1002_min3_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1002', time__startswith="{}{}".format(get_hour, min3)).count()
-    sri_gt1_1002_min4_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1002', time__startswith="{}{}".format(get_hour, min4)).count()
-    sri_gt1_1002_min5_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1002', time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-#SRI breakdown 3 3197015001050
-
-    sri_gt1_1003_min0_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1003', time__startswith="{}{}".format(get_hour, min0)).count()
-    sri_gt1_1003_min1_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1003', time__startswith="{}{}".format(get_hour, min1)).count()
-    sri_gt1_1003_min2_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1003', time__startswith="{}{}".format(get_hour, min2)).count()
-    sri_gt1_1003_min3_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1003', time__startswith="{}{}".format(get_hour, min3)).count()
-    sri_gt1_1003_min4_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1003', time__startswith="{}{}".format(get_hour, min4)).count()
-    sri_gt1_1003_min5_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1003', time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-#SRI breakdown 4 3197015001050
-    sri_gt1_1004_min0_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1004', time__startswith="{}{}".format(get_hour, min0)).count()
-    sri_gt1_1004_min1_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1004', time__startswith="{}{}".format(get_hour, min1)).count()
-    sri_gt1_1004_min2_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1004', time__startswith="{}{}".format(get_hour, min2)).count()
-    sri_gt1_1004_min3_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1004', time__startswith="{}{}".format(get_hour, min3)).count()
-    sri_gt1_1004_min4_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1004', time__startswith="{}{}".format(get_hour, min4)).count()
-    sri_gt1_1004_min5_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="3197015001050,", networkid__contains='1004', time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-
-
-    #SRI breakdown 1 61491500050
-
-    sri_gt2_1001_min0_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1001', time__startswith="{}{}".format(get_hour, min0)).count()
-    sri_gt2_1001_min1_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1001', time__startswith="{}{}".format(get_hour, min1)).count()
-    sri_gt2_1001_min2_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1001', time__startswith="{}{}".format(get_hour, min2)).count()
-    sri_gt2_1001_min3_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1001', time__startswith="{}{}".format(get_hour, min3)).count()
-    sri_gt2_1001_min4_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1001', time__startswith="{}{}".format(get_hour, min4)).count()
-    sri_gt2_1001_min5_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1001', time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-
-
-    #SRI breakdown 2 61491500050
-
-    sri_gt2_1002_min0_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1002', time__startswith="{}{}".format(get_hour, min0)).count()
-    sri_gt2_1002_min1_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1002', time__startswith="{}{}".format(get_hour, min1)).count()
-    sri_gt2_1002_min2_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1002', time__startswith="{}{}".format(get_hour, min2)).count()
-    sri_gt2_1002_min3_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1002', time__startswith="{}{}".format(get_hour, min3)).count()
-    sri_gt2_1002_min4_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1002', time__startswith="{}{}".format(get_hour, min4)).count()
-    sri_gt2_1002_min5_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1002', time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-
-    #SRI breakdown 3 61491500050
-
-    sri_gt2_1003_min0_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1003', time__startswith="{}{}".format(get_hour, min0)).count()
-    sri_gt2_1003_min1_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1003', time__startswith="{}{}".format(get_hour, min1)).count()
-    sri_gt2_1003_min2_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1003', time__startswith="{}{}".format(get_hour, min2)).count()
-    sri_gt2_1003_min3_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1003', time__startswith="{}{}".format(get_hour, min3)).count()
-    sri_gt2_1003_min4_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1003', time__startswith="{}{}".format(get_hour, min4)).count()
-    sri_gt2_1003_min5_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1003', time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-
-    #SRI breakdown 4 61491500050
-
-    sri_gt2_1004_min0_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1004', time__startswith="{}{}".format(get_hour, min0)).count()
-    sri_gt2_1004_min1_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1004', time__startswith="{}{}".format(get_hour, min1)).count()
-    sri_gt2_1004_min2_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1004', time__startswith="{}{}".format(get_hour, min2)).count()
-    sri_gt2_1004_min3_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1004', time__startswith="{}{}".format(get_hour, min3)).count()
-    sri_gt2_1004_min4_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1004', time__startswith="{}{}".format(get_hour, min4)).count()
-    sri_gt2_1004_min5_smsc_2_eu4_0 = CdrProcess.objects.filter(msisdn__startswith="65", system__exact="smsc-2-eu4,", error_msg__contains="onDialogTimeoutafterSRIRequest", gt__contains="61491500050,", networkid__contains='1004', time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-
-    #FWSM breakdown 1 3197015001050 route TATA
-
-    mtfs_gt1_1001_min0_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt1_1001_min1_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt1_1001_min2_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt1_1001_min3_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt1_1001_min4_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt1_1001_min5_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-    #FWSM breakdown 2 3197015001050 route iBasis
-
-    mtfs_gt1_1002_min0_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt1_1002_min1_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt1_1002_min2_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt1_1002_min3_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt1_1002_min4_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt1_1002_min5_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-#FWSM breakdown 3 3197015001050 route Comfone
-
-    mtfs_gt1_1003_min0_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt1_1003_min1_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt1_1003_min2_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt1_1003_min3_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt1_1003_min4_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt1_1003_min5_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-#FWSM breakdown 4 3197015001050 route BICS
-
-    mtfs_gt1_1004_min0_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt1_1004_min1_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt1_1004_min2_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt1_1004_min3_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt1_1004_min4_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt1_1004_min5_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
- #FWSM breakdown 1 61491500050 route TATA
-
-    mtfs_gt2_1001_min0_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt2_1001_min1_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt2_1001_min2_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt2_1001_min3_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt2_1001_min4_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt2_1001_min5_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-
-    #FWSM breakdown 2 61491500050 route iBasis
-
-    mtfs_gt2_1002_min0_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt2_1002_min1_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt2_1002_min2_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt2_1002_min3_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt2_1002_min4_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt2_1002_min5_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-#FWSM breakdown 3 61491500050 route Comfone
-
-    mtfs_gt2_1003_min0_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt2_1003_min1_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt2_1003_min2_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt2_1003_min3_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt2_1003_min4_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt2_1003_min5_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-#FWSM breakdown 4 61491500050 route BICS
-
-    mtfs_gt2_1004_min0_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt2_1004_min1_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt2_1004_min2_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt2_1004_min3_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt2_1004_min4_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt2_1004_min5_smsc_2_eu4_0 = CdrProcess.objects.filter(imsi__startswith="52501", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-
-    # Text here some text purple 
-
-    #FWSM breakdown 1 3197015001050 route TATA
-
-    mtfs_gt1_1001_min0_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt1_1001_min1_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt1_1001_min2_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt1_1001_min3_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt1_1001_min4_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt1_1001_min5_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-    #FWSM breakdown 2 3197015001050 route iBasis
-
-    mtfs_gt1_1002_min0_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt1_1002_min1_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt1_1002_min2_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt1_1002_min3_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt1_1002_min4_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt1_1002_min5_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-#FWSM breakdown 3 3197015001050 route Comfone
-
-    mtfs_gt1_1003_min0_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt1_1003_min1_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt1_1003_min2_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt1_1003_min3_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt1_1003_min4_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt1_1003_min5_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-#FWSM breakdown 4 3197015001050 route BICS
-
-    mtfs_gt1_1004_min0_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt1_1004_min1_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt1_1004_min2_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt1_1004_min3_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt1_1004_min4_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt1_1004_min5_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-
-    #FWSM breakdown 1 3197015001050 route TATA
-
-    mtfs_gt2_1001_min0_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt2_1001_min1_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt2_1001_min2_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt2_1001_min3_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt2_1001_min4_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt2_1001_min5_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-    #FWSM breakdown 2 3197015001050 route iBasis
-
-    mtfs_gt2_1002_min0_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt2_1002_min1_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt2_1002_min2_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt2_1002_min3_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt2_1002_min4_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt2_1002_min5_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-#FWSM breakdown 3 3197015001050 route Comfone
-
-    mtfs_gt2_1003_min0_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt2_1003_min1_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt2_1003_min2_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt2_1003_min3_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt2_1003_min4_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt2_1003_min5_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-#FWSM breakdown 4 3197015001050 route BICS
-
-    mtfs_gt2_1004_min0_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt2_1004_min1_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt2_1004_min2_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt2_1004_min3_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt2_1004_min4_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt2_1004_min5_smsc_2_eu4_1 = CdrProcess.objects.filter(imsi__startswith="52505", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-
-
-
-
-
-
-
-    # Text here some text purple 
-
-    #FWSM breakdown 1 3197015001050 route TATA
-
-    mtfs_gt1_1001_min0_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt1_1001_min1_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt1_1001_min2_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt1_1001_min3_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt1_1001_min4_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt1_1001_min5_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-    #FWSM breakdown 2 3197015001050 route iBasis
-
-    mtfs_gt1_1002_min0_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt1_1002_min1_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt1_1002_min2_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt1_1002_min3_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt1_1002_min4_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt1_1002_min5_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-#FWSM breakdown 3 3197015001050 route Comfone
-
-    mtfs_gt1_1003_min0_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt1_1003_min1_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt1_1003_min2_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt1_1003_min3_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt1_1003_min4_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt1_1003_min5_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-#FWSM breakdown 4 3197015001050 route BICS
-
-    mtfs_gt1_1004_min0_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt1_1004_min1_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt1_1004_min2_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt1_1004_min3_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt1_1004_min4_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt1_1004_min5_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="3197015001050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-
-
-    #FWSM breakdown 1 3197015001050 route TATA
-
-    mtfs_gt2_1001_min0_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt2_1001_min1_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt2_1001_min2_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt2_1001_min3_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt2_1001_min4_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt2_1001_min5_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1001', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-    #FWSM breakdown 2 3197015001050 route iBasis
-
-    mtfs_gt2_1002_min0_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt2_1002_min1_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt2_1002_min2_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt2_1002_min3_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt2_1002_min4_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt2_1002_min5_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1002', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-#FWSM breakdown 3 3197015001050 route Comfone
-
-    mtfs_gt2_1003_min0_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt2_1003_min1_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt2_1003_min2_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt2_1003_min3_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt2_1003_min4_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt2_1003_min5_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1003', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-#FWSM breakdown 4 3197015001050 route BICS
-
-    mtfs_gt2_1004_min0_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min0)).count()
-    mtfs_gt2_1004_min1_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min1)).count()
-    mtfs_gt2_1004_min2_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min2)).count()
-    mtfs_gt2_1004_min3_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min3)).count()
-    mtfs_gt2_1004_min4_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min4)).count()
-    mtfs_gt2_1004_min5_smsc_2_eu4_2 = CdrProcess.objects.filter(imsi__startswith="52503", system__exact="smsc-2-eu4,", gt__contains="61491500050,", networkid__contains='1004', error_msg__contains="onDialogTimeoutafterMtForwardSMRequest", time__startswith="{}{}".format(get_hour, min5)).count()
-
-
-
-
-
-
-
-    context = {
-        'count_success_smsc_2_eu4' : count_success_smsc_2_eu4,
-        'count_temp_failed_smsc_2_eu4' : count_temp_failed_smsc_2_eu4,
-        'count_failed_smsc_2_eu4' : count_failed_smsc_2_eu4,
-
-        'total_min0_smsc_2_eu4' : total_min0_smsc_2_eu4,
-        'total_min1_smsc_2_eu4' : total_min1_smsc_2_eu4,
-        'total_min2_smsc_2_eu4' : total_min2_smsc_2_eu4,
-        'total_min3_smsc_2_eu4' : total_min3_smsc_2_eu4,
-        'total_min4_smsc_2_eu4' : total_min4_smsc_2_eu4,
-        'total_min5_smsc_2_eu4' : total_min5_smsc_2_eu4,
-
-        'success_min0_smsc_2_eu4' : success_min0_smsc_2_eu4,
-        'success_min1_smsc_2_eu4' : success_min1_smsc_2_eu4,
-        'success_min2_smsc_2_eu4' : success_min2_smsc_2_eu4,
-        'success_min3_smsc_2_eu4' : success_min3_smsc_2_eu4,
-        'success_min4_smsc_2_eu4' : success_min4_smsc_2_eu4,
-        'success_min5_smsc_2_eu4' : success_min5_smsc_2_eu4,
-
-        'failed_min0_smsc_2_eu4' : failed_min0_smsc_2_eu4,
-        'failed_min1_smsc_2_eu4' : failed_min1_smsc_2_eu4,
-        'failed_min2_smsc_2_eu4' : failed_min2_smsc_2_eu4,
-        'failed_min3_smsc_2_eu4' : failed_min3_smsc_2_eu4,
-        'failed_min4_smsc_2_eu4' : failed_min4_smsc_2_eu4,
-        'failed_min5_smsc_2_eu4' : failed_min5_smsc_2_eu4,
-
-        'sri_min0_smsc_2_eu4' : sri_min0_smsc_2_eu4,
-        'sri_min1_smsc_2_eu4' : sri_min1_smsc_2_eu4,
-        'sri_min2_smsc_2_eu4' : sri_min2_smsc_2_eu4,
-        'sri_min3_smsc_2_eu4' : sri_min3_smsc_2_eu4,
-        'sri_min4_smsc_2_eu4' : sri_min4_smsc_2_eu4,
-        'sri_min5_smsc_2_eu4' : sri_min5_smsc_2_eu4,
-
-        'mtfs_min0_smsc_2_eu4' : mtfs_min0_smsc_2_eu4,
-        'mtfs_min1_smsc_2_eu4' : mtfs_min1_smsc_2_eu4,
-        'mtfs_min2_smsc_2_eu4' : mtfs_min2_smsc_2_eu4,
-        'mtfs_min3_smsc_2_eu4' : mtfs_min3_smsc_2_eu4,
-        'mtfs_min4_smsc_2_eu4' : mtfs_min4_smsc_2_eu4,
-        'mtfs_min5_smsc_2_eu4' : mtfs_min5_smsc_2_eu4,
-
-        'mtfs_min0_smsc_2_eu4_1' : mtfs_min0_smsc_2_eu4_1, 
-        'mtfs_min1_smsc_2_eu4_1' : mtfs_min1_smsc_2_eu4_1, 
-        'mtfs_min2_smsc_2_eu4_1' : mtfs_min2_smsc_2_eu4_1, 
-        'mtfs_min3_smsc_2_eu4_1' : mtfs_min3_smsc_2_eu4_1, 
-        'mtfs_min4_smsc_2_eu4_1' : mtfs_min4_smsc_2_eu4_1, 
-        'mtfs_min5_smsc_2_eu4_1' : mtfs_min5_smsc_2_eu4_1, 
-
-        'mtfs_52503_min0_smsc_2_eu4_0' : mtfs_52503_min0_smsc_2_eu4_0,
-        'mtfs_52503_min1_smsc_2_eu4_0' : mtfs_52503_min1_smsc_2_eu4_0,
-        'mtfs_52503_min2_smsc_2_eu4_0' : mtfs_52503_min2_smsc_2_eu4_0,
-        'mtfs_52503_min3_smsc_2_eu4_0' : mtfs_52503_min3_smsc_2_eu4_0,
-        'mtfs_52503_min4_smsc_2_eu4_0' : mtfs_52503_min4_smsc_2_eu4_0,
-        'mtfs_52503_min5_smsc_2_eu4_0' : mtfs_52503_min5_smsc_2_eu4_0,
-
-
-        'sri_gt1_1001_min0_smsc_2_eu4_0' : sri_gt1_1001_min0_smsc_2_eu4_0,
-        'sri_gt1_1001_min1_smsc_2_eu4_0' : sri_gt1_1001_min1_smsc_2_eu4_0,
-        'sri_gt1_1001_min2_smsc_2_eu4_0' : sri_gt1_1001_min2_smsc_2_eu4_0,
-        'sri_gt1_1001_min3_smsc_2_eu4_0' : sri_gt1_1001_min3_smsc_2_eu4_0,
-        'sri_gt1_1001_min4_smsc_2_eu4_0' : sri_gt1_1001_min4_smsc_2_eu4_0,
-        'sri_gt1_1001_min5_smsc_2_eu4_0' : sri_gt1_1001_min5_smsc_2_eu4_0,
-
-        'sri_gt1_1002_min0_smsc_2_eu4_0' : sri_gt1_1002_min0_smsc_2_eu4_0,
-        'sri_gt1_1002_min1_smsc_2_eu4_0' : sri_gt1_1002_min1_smsc_2_eu4_0,
-        'sri_gt1_1002_min2_smsc_2_eu4_0' : sri_gt1_1002_min2_smsc_2_eu4_0,
-        'sri_gt1_1002_min3_smsc_2_eu4_0' : sri_gt1_1002_min3_smsc_2_eu4_0,
-        'sri_gt1_1002_min4_smsc_2_eu4_0' : sri_gt1_1002_min4_smsc_2_eu4_0,
-        'sri_gt1_1002_min5_smsc_2_eu4_0' : sri_gt1_1002_min5_smsc_2_eu4_0,
-
-
-        'sri_gt1_1003_min0_smsc_2_eu4_0' : sri_gt1_1003_min0_smsc_2_eu4_0, 
-        'sri_gt1_1003_min1_smsc_2_eu4_0' : sri_gt1_1003_min1_smsc_2_eu4_0, 
-        'sri_gt1_1003_min2_smsc_2_eu4_0' : sri_gt1_1003_min2_smsc_2_eu4_0, 
-        'sri_gt1_1003_min3_smsc_2_eu4_0' : sri_gt1_1003_min3_smsc_2_eu4_0, 
-        'sri_gt1_1003_min4_smsc_2_eu4_0' : sri_gt1_1003_min4_smsc_2_eu4_0, 
-        'sri_gt1_1003_min5_smsc_2_eu4_0' : sri_gt1_1003_min5_smsc_2_eu4_0, 
-
-        'sri_gt1_1004_min0_smsc_2_eu4_0' : sri_gt1_1004_min0_smsc_2_eu4_0,
-        'sri_gt1_1004_min1_smsc_2_eu4_0' : sri_gt1_1004_min1_smsc_2_eu4_0,
-        'sri_gt1_1004_min2_smsc_2_eu4_0' : sri_gt1_1004_min2_smsc_2_eu4_0,
-        'sri_gt1_1004_min3_smsc_2_eu4_0' : sri_gt1_1004_min3_smsc_2_eu4_0,
-        'sri_gt1_1004_min4_smsc_2_eu4_0' : sri_gt1_1004_min4_smsc_2_eu4_0,
-        'sri_gt1_1004_min5_smsc_2_eu4_0' : sri_gt1_1004_min5_smsc_2_eu4_0,
-
-
-        'sri_gt2_1001_min0_smsc_2_eu4_0' : sri_gt2_1001_min0_smsc_2_eu4_0,
-        'sri_gt2_1001_min1_smsc_2_eu4_0' : sri_gt2_1001_min1_smsc_2_eu4_0,
-        'sri_gt2_1001_min2_smsc_2_eu4_0' : sri_gt2_1001_min2_smsc_2_eu4_0,
-        'sri_gt2_1001_min3_smsc_2_eu4_0' : sri_gt2_1001_min3_smsc_2_eu4_0,
-        'sri_gt2_1001_min4_smsc_2_eu4_0' : sri_gt2_1001_min4_smsc_2_eu4_0,
-        'sri_gt2_1001_min5_smsc_2_eu4_0' : sri_gt2_1001_min5_smsc_2_eu4_0,
-
-
-        'sri_gt2_1002_min0_smsc_2_eu4_0' : sri_gt2_1002_min0_smsc_2_eu4_0,
-        'sri_gt2_1002_min1_smsc_2_eu4_0' : sri_gt2_1002_min1_smsc_2_eu4_0,
-        'sri_gt2_1002_min2_smsc_2_eu4_0' : sri_gt2_1002_min2_smsc_2_eu4_0,
-        'sri_gt2_1002_min3_smsc_2_eu4_0' : sri_gt2_1002_min3_smsc_2_eu4_0,
-        'sri_gt2_1002_min4_smsc_2_eu4_0' : sri_gt2_1002_min4_smsc_2_eu4_0,
-        'sri_gt2_1002_min5_smsc_2_eu4_0' : sri_gt2_1002_min5_smsc_2_eu4_0,
-
-
-        'sri_gt2_1003_min0_smsc_2_eu4_0' : sri_gt2_1003_min0_smsc_2_eu4_0,
-        'sri_gt2_1003_min1_smsc_2_eu4_0' : sri_gt2_1003_min1_smsc_2_eu4_0,
-        'sri_gt2_1003_min2_smsc_2_eu4_0' : sri_gt2_1003_min2_smsc_2_eu4_0,
-        'sri_gt2_1003_min3_smsc_2_eu4_0' : sri_gt2_1003_min3_smsc_2_eu4_0,
-        'sri_gt2_1003_min4_smsc_2_eu4_0' : sri_gt2_1003_min4_smsc_2_eu4_0,
-        'sri_gt2_1003_min5_smsc_2_eu4_0' : sri_gt2_1003_min5_smsc_2_eu4_0,
-
-        'sri_gt2_1004_min0_smsc_2_eu4_0' : sri_gt2_1004_min0_smsc_2_eu4_0,
-        'sri_gt2_1004_min1_smsc_2_eu4_0' : sri_gt2_1004_min1_smsc_2_eu4_0,
-        'sri_gt2_1004_min2_smsc_2_eu4_0' : sri_gt2_1004_min2_smsc_2_eu4_0,
-        'sri_gt2_1004_min3_smsc_2_eu4_0' : sri_gt2_1004_min3_smsc_2_eu4_0,
-        'sri_gt2_1004_min4_smsc_2_eu4_0' : sri_gt2_1004_min4_smsc_2_eu4_0,
-        'sri_gt2_1004_min5_smsc_2_eu4_0' : sri_gt2_1004_min5_smsc_2_eu4_0,
-
-        'mtfs_gt1_1001_min0_smsc_2_eu4_0' : mtfs_gt1_1001_min0_smsc_2_eu4_0,
-        'mtfs_gt1_1001_min1_smsc_2_eu4_0' : mtfs_gt1_1001_min1_smsc_2_eu4_0,
-        'mtfs_gt1_1001_min2_smsc_2_eu4_0' : mtfs_gt1_1001_min2_smsc_2_eu4_0,
-        'mtfs_gt1_1001_min3_smsc_2_eu4_0' : mtfs_gt1_1001_min3_smsc_2_eu4_0,
-        'mtfs_gt1_1001_min4_smsc_2_eu4_0' : mtfs_gt1_1001_min4_smsc_2_eu4_0,
-        'mtfs_gt1_1001_min5_smsc_2_eu4_0' : mtfs_gt1_1001_min5_smsc_2_eu4_0,
-
-
-        'mtfs_gt1_1002_min0_smsc_2_eu4_0' : mtfs_gt1_1002_min0_smsc_2_eu4_0,
-        'mtfs_gt1_1002_min1_smsc_2_eu4_0' : mtfs_gt1_1002_min1_smsc_2_eu4_0,
-        'mtfs_gt1_1002_min2_smsc_2_eu4_0' : mtfs_gt1_1002_min2_smsc_2_eu4_0,
-        'mtfs_gt1_1002_min3_smsc_2_eu4_0' : mtfs_gt1_1002_min3_smsc_2_eu4_0,
-        'mtfs_gt1_1002_min4_smsc_2_eu4_0' : mtfs_gt1_1002_min4_smsc_2_eu4_0,
-        'mtfs_gt1_1002_min5_smsc_2_eu4_0' : mtfs_gt1_1002_min5_smsc_2_eu4_0,
-
-        'mtfs_gt1_1003_min0_smsc_2_eu4_0' : mtfs_gt1_1003_min0_smsc_2_eu4_0,
-        'mtfs_gt1_1003_min1_smsc_2_eu4_0' : mtfs_gt1_1003_min1_smsc_2_eu4_0,
-        'mtfs_gt1_1003_min2_smsc_2_eu4_0' : mtfs_gt1_1003_min2_smsc_2_eu4_0,
-        'mtfs_gt1_1003_min3_smsc_2_eu4_0' : mtfs_gt1_1003_min3_smsc_2_eu4_0,
-        'mtfs_gt1_1003_min4_smsc_2_eu4_0' : mtfs_gt1_1003_min4_smsc_2_eu4_0,
-        'mtfs_gt1_1003_min5_smsc_2_eu4_0' : mtfs_gt1_1003_min5_smsc_2_eu4_0,
-
-        'mtfs_gt1_1004_min0_smsc_2_eu4_0' : mtfs_gt1_1004_min0_smsc_2_eu4_0,
-        'mtfs_gt1_1004_min1_smsc_2_eu4_0' : mtfs_gt1_1004_min1_smsc_2_eu4_0,
-        'mtfs_gt1_1004_min2_smsc_2_eu4_0' : mtfs_gt1_1004_min2_smsc_2_eu4_0,
-        'mtfs_gt1_1004_min3_smsc_2_eu4_0' : mtfs_gt1_1004_min3_smsc_2_eu4_0,
-        'mtfs_gt1_1004_min4_smsc_2_eu4_0' : mtfs_gt1_1004_min4_smsc_2_eu4_0,
-        'mtfs_gt1_1004_min5_smsc_2_eu4_0' : mtfs_gt1_1004_min5_smsc_2_eu4_0,
-
-
-        'mtfs_gt2_1001_min0_smsc_2_eu4_0' : mtfs_gt2_1001_min0_smsc_2_eu4_0,
-        'mtfs_gt2_1001_min1_smsc_2_eu4_0' : mtfs_gt2_1001_min1_smsc_2_eu4_0,
-        'mtfs_gt2_1001_min2_smsc_2_eu4_0' : mtfs_gt2_1001_min2_smsc_2_eu4_0,
-        'mtfs_gt2_1001_min3_smsc_2_eu4_0' : mtfs_gt2_1001_min3_smsc_2_eu4_0,
-        'mtfs_gt2_1001_min4_smsc_2_eu4_0' : mtfs_gt2_1001_min4_smsc_2_eu4_0,
-        'mtfs_gt2_1001_min5_smsc_2_eu4_0' : mtfs_gt2_1001_min5_smsc_2_eu4_0,
-
-        'mtfs_gt2_1002_min0_smsc_2_eu4_0' : mtfs_gt2_1002_min0_smsc_2_eu4_0,
-        'mtfs_gt2_1002_min1_smsc_2_eu4_0' : mtfs_gt2_1002_min1_smsc_2_eu4_0,
-        'mtfs_gt2_1002_min2_smsc_2_eu4_0' : mtfs_gt2_1002_min2_smsc_2_eu4_0,
-        'mtfs_gt2_1002_min3_smsc_2_eu4_0' : mtfs_gt2_1002_min3_smsc_2_eu4_0,
-        'mtfs_gt2_1002_min4_smsc_2_eu4_0' : mtfs_gt2_1002_min4_smsc_2_eu4_0,
-        'mtfs_gt2_1002_min5_smsc_2_eu4_0' : mtfs_gt2_1002_min5_smsc_2_eu4_0,
-
-        'mtfs_gt2_1003_min0_smsc_2_eu4_0' : mtfs_gt2_1003_min0_smsc_2_eu4_0,
-        'mtfs_gt2_1003_min1_smsc_2_eu4_0' : mtfs_gt2_1003_min1_smsc_2_eu4_0,
-        'mtfs_gt2_1003_min2_smsc_2_eu4_0' : mtfs_gt2_1003_min2_smsc_2_eu4_0,
-        'mtfs_gt2_1003_min3_smsc_2_eu4_0' : mtfs_gt2_1003_min3_smsc_2_eu4_0,
-        'mtfs_gt2_1003_min4_smsc_2_eu4_0' : mtfs_gt2_1003_min4_smsc_2_eu4_0,
-        'mtfs_gt2_1003_min5_smsc_2_eu4_0' : mtfs_gt2_1003_min5_smsc_2_eu4_0,
-
-        'mtfs_gt2_1004_min0_smsc_2_eu4_0' : mtfs_gt2_1004_min0_smsc_2_eu4_0,
-        'mtfs_gt2_1004_min1_smsc_2_eu4_0' : mtfs_gt2_1004_min1_smsc_2_eu4_0,
-        'mtfs_gt2_1004_min2_smsc_2_eu4_0' : mtfs_gt2_1004_min2_smsc_2_eu4_0,
-        'mtfs_gt2_1004_min3_smsc_2_eu4_0' : mtfs_gt2_1004_min3_smsc_2_eu4_0,
-        'mtfs_gt2_1004_min4_smsc_2_eu4_0' : mtfs_gt2_1004_min4_smsc_2_eu4_0,
-        'mtfs_gt2_1004_min5_smsc_2_eu4_0' : mtfs_gt2_1004_min5_smsc_2_eu4_0,
-
-
-
-        'mtfs_gt1_1001_min0_smsc_2_eu4_1' : mtfs_gt1_1001_min0_smsc_2_eu4_1,
-        'mtfs_gt1_1001_min1_smsc_2_eu4_1' : mtfs_gt1_1001_min1_smsc_2_eu4_1,
-        'mtfs_gt1_1001_min2_smsc_2_eu4_1' : mtfs_gt1_1001_min2_smsc_2_eu4_1,
-        'mtfs_gt1_1001_min3_smsc_2_eu4_1' : mtfs_gt1_1001_min3_smsc_2_eu4_1,
-        'mtfs_gt1_1001_min4_smsc_2_eu4_1' : mtfs_gt1_1001_min4_smsc_2_eu4_1,
-        'mtfs_gt1_1001_min5_smsc_2_eu4_1' : mtfs_gt1_1001_min5_smsc_2_eu4_1,
-
-        'mtfs_gt1_1002_min0_smsc_2_eu4_1' : mtfs_gt1_1002_min0_smsc_2_eu4_1,
-        'mtfs_gt1_1002_min1_smsc_2_eu4_1' : mtfs_gt1_1002_min1_smsc_2_eu4_1,
-        'mtfs_gt1_1002_min2_smsc_2_eu4_1' : mtfs_gt1_1002_min2_smsc_2_eu4_1,
-        'mtfs_gt1_1002_min3_smsc_2_eu4_1' : mtfs_gt1_1002_min3_smsc_2_eu4_1,
-        'mtfs_gt1_1002_min4_smsc_2_eu4_1' : mtfs_gt1_1002_min4_smsc_2_eu4_1,
-        'mtfs_gt1_1002_min5_smsc_2_eu4_1' : mtfs_gt1_1002_min5_smsc_2_eu4_1,
-
-        'mtfs_gt1_1003_min0_smsc_2_eu4_1' : mtfs_gt1_1003_min0_smsc_2_eu4_1,
-        'mtfs_gt1_1003_min1_smsc_2_eu4_1' : mtfs_gt1_1003_min1_smsc_2_eu4_1,
-        'mtfs_gt1_1003_min2_smsc_2_eu4_1' : mtfs_gt1_1003_min2_smsc_2_eu4_1,
-        'mtfs_gt1_1003_min3_smsc_2_eu4_1' : mtfs_gt1_1003_min3_smsc_2_eu4_1,
-        'mtfs_gt1_1003_min4_smsc_2_eu4_1' : mtfs_gt1_1003_min4_smsc_2_eu4_1,
-        'mtfs_gt1_1003_min5_smsc_2_eu4_1' : mtfs_gt1_1003_min5_smsc_2_eu4_1,
-
-        'mtfs_gt1_1004_min0_smsc_2_eu4_1' : mtfs_gt1_1004_min0_smsc_2_eu4_1,
-        'mtfs_gt1_1004_min1_smsc_2_eu4_1' : mtfs_gt1_1004_min1_smsc_2_eu4_1,
-        'mtfs_gt1_1004_min2_smsc_2_eu4_1' : mtfs_gt1_1004_min2_smsc_2_eu4_1,
-        'mtfs_gt1_1004_min3_smsc_2_eu4_1' : mtfs_gt1_1004_min3_smsc_2_eu4_1,
-        'mtfs_gt1_1004_min4_smsc_2_eu4_1' : mtfs_gt1_1004_min4_smsc_2_eu4_1,
-        'mtfs_gt1_1004_min5_smsc_2_eu4_1' : mtfs_gt1_1004_min5_smsc_2_eu4_1,
-
-
-
-        'mtfs_gt2_1001_min0_smsc_2_eu4_1' : mtfs_gt2_1001_min0_smsc_2_eu4_1,
-        'mtfs_gt2_1001_min1_smsc_2_eu4_1' : mtfs_gt2_1001_min1_smsc_2_eu4_1,
-        'mtfs_gt2_1001_min2_smsc_2_eu4_1' : mtfs_gt2_1001_min2_smsc_2_eu4_1,
-        'mtfs_gt2_1001_min3_smsc_2_eu4_1' : mtfs_gt2_1001_min3_smsc_2_eu4_1,
-        'mtfs_gt2_1001_min4_smsc_2_eu4_1' : mtfs_gt2_1001_min4_smsc_2_eu4_1,
-        'mtfs_gt2_1001_min5_smsc_2_eu4_1' : mtfs_gt2_1001_min5_smsc_2_eu4_1,
-
-        'mtfs_gt2_1002_min0_smsc_2_eu4_1' : mtfs_gt2_1002_min0_smsc_2_eu4_1,
-        'mtfs_gt2_1002_min1_smsc_2_eu4_1' : mtfs_gt2_1002_min1_smsc_2_eu4_1,
-        'mtfs_gt2_1002_min2_smsc_2_eu4_1' : mtfs_gt2_1002_min2_smsc_2_eu4_1,
-        'mtfs_gt2_1002_min3_smsc_2_eu4_1' : mtfs_gt2_1002_min3_smsc_2_eu4_1,
-        'mtfs_gt2_1002_min4_smsc_2_eu4_1' : mtfs_gt2_1002_min4_smsc_2_eu4_1,
-        'mtfs_gt2_1002_min5_smsc_2_eu4_1' : mtfs_gt2_1002_min5_smsc_2_eu4_1,
-
-        'mtfs_gt2_1003_min0_smsc_2_eu4_1' : mtfs_gt2_1003_min0_smsc_2_eu4_1,
-        'mtfs_gt2_1003_min1_smsc_2_eu4_1' : mtfs_gt2_1003_min1_smsc_2_eu4_1,
-        'mtfs_gt2_1003_min2_smsc_2_eu4_1' : mtfs_gt2_1003_min2_smsc_2_eu4_1,
-        'mtfs_gt2_1003_min3_smsc_2_eu4_1' : mtfs_gt2_1003_min3_smsc_2_eu4_1,
-        'mtfs_gt2_1003_min4_smsc_2_eu4_1' : mtfs_gt2_1003_min4_smsc_2_eu4_1,
-        'mtfs_gt2_1003_min5_smsc_2_eu4_1' : mtfs_gt2_1003_min5_smsc_2_eu4_1,
-
-        'mtfs_gt2_1004_min0_smsc_2_eu4_1' : mtfs_gt2_1004_min0_smsc_2_eu4_1,
-        'mtfs_gt2_1004_min1_smsc_2_eu4_1' : mtfs_gt2_1004_min1_smsc_2_eu4_1,
-        'mtfs_gt2_1004_min2_smsc_2_eu4_1' : mtfs_gt2_1004_min2_smsc_2_eu4_1,
-        'mtfs_gt2_1004_min3_smsc_2_eu4_1' : mtfs_gt2_1004_min3_smsc_2_eu4_1,
-        'mtfs_gt2_1004_min4_smsc_2_eu4_1' : mtfs_gt2_1004_min4_smsc_2_eu4_1,
-        'mtfs_gt2_1004_min5_smsc_2_eu4_1' : mtfs_gt2_1004_min5_smsc_2_eu4_1,
-
-
-
-
-
-
-
-        'mtfs_gt1_1001_min0_smsc_2_eu4_2' : mtfs_gt1_1001_min0_smsc_2_eu4_2,
-        'mtfs_gt1_1001_min1_smsc_2_eu4_2' : mtfs_gt1_1001_min1_smsc_2_eu4_2,
-        'mtfs_gt1_1001_min2_smsc_2_eu4_2' : mtfs_gt1_1001_min2_smsc_2_eu4_2,
-        'mtfs_gt1_1001_min3_smsc_2_eu4_2' : mtfs_gt1_1001_min3_smsc_2_eu4_2,
-        'mtfs_gt1_1001_min4_smsc_2_eu4_2' : mtfs_gt1_1001_min4_smsc_2_eu4_2,
-        'mtfs_gt1_1001_min5_smsc_2_eu4_2' : mtfs_gt1_1001_min5_smsc_2_eu4_2,
-
-        'mtfs_gt1_1002_min0_smsc_2_eu4_2' : mtfs_gt1_1002_min0_smsc_2_eu4_2,
-        'mtfs_gt1_1002_min1_smsc_2_eu4_2' : mtfs_gt1_1002_min1_smsc_2_eu4_2,
-        'mtfs_gt1_1002_min2_smsc_2_eu4_2' : mtfs_gt1_1002_min2_smsc_2_eu4_2,
-        'mtfs_gt1_1002_min3_smsc_2_eu4_2' : mtfs_gt1_1002_min3_smsc_2_eu4_2,
-        'mtfs_gt1_1002_min4_smsc_2_eu4_2' : mtfs_gt1_1002_min4_smsc_2_eu4_2,
-        'mtfs_gt1_1002_min5_smsc_2_eu4_2' : mtfs_gt1_1002_min5_smsc_2_eu4_2,
-
-        'mtfs_gt1_1003_min0_smsc_2_eu4_2' : mtfs_gt1_1003_min0_smsc_2_eu4_2,
-        'mtfs_gt1_1003_min1_smsc_2_eu4_2' : mtfs_gt1_1003_min1_smsc_2_eu4_2,
-        'mtfs_gt1_1003_min2_smsc_2_eu4_2' : mtfs_gt1_1003_min2_smsc_2_eu4_2,
-        'mtfs_gt1_1003_min3_smsc_2_eu4_2' : mtfs_gt1_1003_min3_smsc_2_eu4_2,
-        'mtfs_gt1_1003_min4_smsc_2_eu4_2' : mtfs_gt1_1003_min4_smsc_2_eu4_2,
-        'mtfs_gt1_1003_min5_smsc_2_eu4_2' : mtfs_gt1_1003_min5_smsc_2_eu4_2,
-
-        'mtfs_gt1_1004_min0_smsc_2_eu4_2' : mtfs_gt1_1004_min0_smsc_2_eu4_2,
-        'mtfs_gt1_1004_min1_smsc_2_eu4_2' : mtfs_gt1_1004_min1_smsc_2_eu4_2,
-        'mtfs_gt1_1004_min2_smsc_2_eu4_2' : mtfs_gt1_1004_min2_smsc_2_eu4_2,
-        'mtfs_gt1_1004_min3_smsc_2_eu4_2' : mtfs_gt1_1004_min3_smsc_2_eu4_2,
-        'mtfs_gt1_1004_min4_smsc_2_eu4_2' : mtfs_gt1_1004_min4_smsc_2_eu4_2,
-        'mtfs_gt1_1004_min5_smsc_2_eu4_2' : mtfs_gt1_1004_min5_smsc_2_eu4_2,
-
-
-
-        'mtfs_gt2_1001_min0_smsc_2_eu4_2' : mtfs_gt2_1001_min0_smsc_2_eu4_2,
-        'mtfs_gt2_1001_min1_smsc_2_eu4_2' : mtfs_gt2_1001_min1_smsc_2_eu4_2,
-        'mtfs_gt2_1001_min2_smsc_2_eu4_2' : mtfs_gt2_1001_min2_smsc_2_eu4_2,
-        'mtfs_gt2_1001_min3_smsc_2_eu4_2' : mtfs_gt2_1001_min3_smsc_2_eu4_2,
-        'mtfs_gt2_1001_min4_smsc_2_eu4_2' : mtfs_gt2_1001_min4_smsc_2_eu4_2,
-        'mtfs_gt2_1001_min5_smsc_2_eu4_2' : mtfs_gt2_1001_min5_smsc_2_eu4_2,
-
-        'mtfs_gt2_1002_min0_smsc_2_eu4_2' : mtfs_gt2_1002_min0_smsc_2_eu4_2,
-        'mtfs_gt2_1002_min1_smsc_2_eu4_2' : mtfs_gt2_1002_min1_smsc_2_eu4_2,
-        'mtfs_gt2_1002_min2_smsc_2_eu4_2' : mtfs_gt2_1002_min2_smsc_2_eu4_2,
-        'mtfs_gt2_1002_min3_smsc_2_eu4_2' : mtfs_gt2_1002_min3_smsc_2_eu4_2,
-        'mtfs_gt2_1002_min4_smsc_2_eu4_2' : mtfs_gt2_1002_min4_smsc_2_eu4_2,
-        'mtfs_gt2_1002_min5_smsc_2_eu4_2' : mtfs_gt2_1002_min5_smsc_2_eu4_2,
-
-        'mtfs_gt2_1003_min0_smsc_2_eu4_2' : mtfs_gt2_1003_min0_smsc_2_eu4_2,
-        'mtfs_gt2_1003_min1_smsc_2_eu4_2' : mtfs_gt2_1003_min1_smsc_2_eu4_2,
-        'mtfs_gt2_1003_min2_smsc_2_eu4_2' : mtfs_gt2_1003_min2_smsc_2_eu4_2,
-        'mtfs_gt2_1003_min3_smsc_2_eu4_2' : mtfs_gt2_1003_min3_smsc_2_eu4_2,
-        'mtfs_gt2_1003_min4_smsc_2_eu4_2' : mtfs_gt2_1003_min4_smsc_2_eu4_2,
-        'mtfs_gt2_1003_min5_smsc_2_eu4_2' : mtfs_gt2_1003_min5_smsc_2_eu4_2,
-
-        'mtfs_gt2_1004_min0_smsc_2_eu4_2' : mtfs_gt2_1004_min0_smsc_2_eu4_2,
-        'mtfs_gt2_1004_min1_smsc_2_eu4_2' : mtfs_gt2_1004_min1_smsc_2_eu4_2,
-        'mtfs_gt2_1004_min2_smsc_2_eu4_2' : mtfs_gt2_1004_min2_smsc_2_eu4_2,
-        'mtfs_gt2_1004_min3_smsc_2_eu4_2' : mtfs_gt2_1004_min3_smsc_2_eu4_2,
-        'mtfs_gt2_1004_min4_smsc_2_eu4_2' : mtfs_gt2_1004_min4_smsc_2_eu4_2,
-        'mtfs_gt2_1004_min5_smsc_2_eu4_2' : mtfs_gt2_1004_min5_smsc_2_eu4_2,
-
-
-        'final_time' : final_time,
-        'get_hour' : get_hour,
-        'count_total_smsc_2_eu4' : count_total_smsc_2_eu4,
-
-        'min0' : min0,
-        'min1' : min1,
-        'min2' : min2,
-        'min3' : min3,
-        'min4' : min4,
-        'min5' : min5
-
-
-    }
-    return render(request, "crm/dashboard.html", context)
+    return render(request, "crm/dashboard.html", {})
 
 
 def fb(request):
@@ -1603,233 +1009,53 @@ def fb(request):
             r1 = list2hourv2()
             for x in r1:
                 r2 = ("{}:{}".format(x[0], x[1]))
-                # Route 3 comfonec01 6994 over primary
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9111111111,', 'success,', '3197015001052,', 'comfonec01', 'smsc-2-eu4,', 'vlr', 'imsi', 'null');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9111111111,', 'failed,', '3197015001052,', 'comfonec01', 'smsc-2-eu4,', 'vlr', 'imsi', 'onDialogTimeoutafterSRIRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9111111111,', 'failed,', '3197015001052,', 'comfonec01', 'smsc-2-eu4,', 'vlr', 'imsi', 'ErrorsmDeliveryFailureafterMtForwardSMRequest:');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9111111111,', 'temp_failed,', '3197015001052,', 'comfonec01', 'smsc-2-eu4,', 'vlr', 'imsi', 'onDialogTimeoutafterMtForwardSMRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9111111111,', 'partial,', '3197015001052,', 'comfonec01', 'smsc-2-eu4,', 'vlr', 'imsi', 'null');".format(r2))
-
-                # Route 3 comfonec01 6994 over secondary
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9122222222,', 'success,', '3197015001052,', 'comfonec01', 'smsc-2-eu1,', 'vlr', 'imsi', 'null');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9122222222,', 'failed,', '3197015001052,', 'comfonec01', 'smsc-2-eu1,', 'vlr', 'imsi', 'onDialogTimeoutafterSRIRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9122222222,', 'failed,', '3197015001052,', 'comfonec01', 'smsc-2-eu1,', 'vlr', 'imsi', 'ErrorsmDeliveryFailureafterMtForwardSMRequest:');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9122222222,', 'temp_failed,', '3197015001052,', 'comfonec01', 'smsc-2-eu1,', 'vlr', 'imsi', 'onDialogTimeoutafterMtForwardSMRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9122222222,', 'partial,', '3197015001052,', 'comfonec01', 'smsc-2-eu1,', 'vlr', 'imsi', 'null');".format(r2))
-
-                # Route 1 syniversec01 6995 over primary
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9133333333,', 'success,', '3197015001050,', 'syniversec01', 'smsc-2-eu4,', 'vlr', 'imsi', 'null');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9133333333,', 'failed,', '3197015001050,', 'syniversec01', 'smsc-2-eu4,', 'vlr', 'imsi', 'onDialogTimeoutafterSRIRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9133333333,', 'failed,', '3197015001050,', 'syniversec01', 'smsc-2-eu4,', 'vlr', 'imsi', 'ErrorsmDeliveryFailureafterMtForwardSMRequest:');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9133333333,', 'temp_failed,', '3197015001050,', 'syniversec01', 'smsc-2-eu4,', 'vlr', 'imsi', 'onDialogTimeoutafterMtForwardSMRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9133333333,', 'partial,', '3197015001050,', 'syniversec01', 'smsc-2-eu4,', 'vlr', 'imsi', 'null');".format(r2))
-
-                # Route 1 syniversec01 6995 over primary
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9144444444,', 'success,', '3197015001050,', 'syniversec01', 'smsc-2-eu1,', 'vlr', 'imsi', 'null');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9144444444,', 'failed,', '3197015001050,', 'syniversec01', 'smsc-2-eu1,', 'vlr', 'imsi', 'onDialogTimeoutafterSRIRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9144444444,', 'failed,', '3197015001050,', 'syniversec01', 'smsc-2-eu1,', 'vlr', 'imsi', 'ErrorsmDeliveryFailureafterMtForwardSMRequest:');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9144444444,', 'temp_failed,', '3197015001050,', 'syniversec01', 'smsc-2-eu1,', 'vlr', 'imsi', 'onDialogTimeoutafterMtForwardSMRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9144444444,', 'partial,', '3197015001050,', 'syniversec01', 'smsc-2-eu1,', 'vlr', 'imsi', 'null');".format(r2))
-
-
-                # Route 2 Syniverse 6908 over all 4 SMSC
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'success,', '3197015001051,', 'syniverse01', 'smsc-1-eu1,', 'vlr', 'imsi', 'null');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'failed,', '3197015001051,', 'syniverse01', 'smsc-1-eu1,', 'vlr', 'imsi', 'onDialogTimeoutafterSRIRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'failed,', '3197015001051,', 'syniverse01', 'smsc-1-eu1,', 'vlr', 'imsi', 'ErrorsmDeliveryFailureafterMtForwardSMRequest:');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'temp_failed,', '3197015001051,', 'syniverse01', 'smsc-1-eu1,', 'vlr', 'imsi', 'onDialogTimeoutafterMtForwardSMRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'partial,', '3197015001051,', 'syniverse01', 'smsc-1-eu1,', 'vlr', 'imsi', 'null');".format(r2))
-
-
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'success,', '3197015001051,', 'syniverse01', 'smsc-2-eu1,', 'vlr', 'imsi', 'null');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'failed,', '3197015001051,', 'syniverse01', 'smsc-2-eu1,', 'vlr', 'imsi', 'onDialogTimeoutafterSRIRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'failed,', '3197015001051,', 'syniverse01', 'smsc-2-eu1,', 'vlr', 'imsi', 'ErrorsmDeliveryFailureafterMtForwardSMRequest:');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'temp_failed,', '3197015001051,', 'syniverse01', 'smsc-2-eu1,', 'vlr', 'imsi', 'onDialogTimeoutafterMtForwardSMRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'partial,', '3197015001051,', 'syniverse01', 'smsc-2-eu1,', 'vlr', 'imsi', 'null');".format(r2))
-
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'success,', '3197015001051,', 'syniverse01', 'smsc-1-eu4,', 'vlr', 'imsi', 'null');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'failed,', '3197015001051,', 'syniverse01', 'smsc-1-eu4,', 'vlr', 'imsi', 'onDialogTimeoutafterSRIRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'failed,', '3197015001051,', 'syniverse01', 'smsc-1-eu4,', 'vlr', 'imsi', 'ErrorsmDeliveryFailureafterMtForwardSMRequest:');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'temp_failed,', '3197015001051,', 'syniverse01', 'smsc-1-eu4,', 'vlr', 'imsi', 'onDialogTimeoutafterMtForwardSMRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'partial,', '3197015001051,', 'syniverse01', 'smsc-1-eu4,', 'vlr', 'imsi', 'null');".format(r2))
-
-
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'success,', '3197015001051,', 'syniverse01', 'smsc-2-eu4,', 'vlr', 'imsi', 'null');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'failed,', '3197015001051,', 'syniverse01', 'smsc-2-eu4,', 'vlr', 'imsi', 'onDialogTimeoutafterSRIRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'failed,', '3197015001051,', 'syniverse01', 'smsc-2-eu4,', 'vlr', 'imsi', 'ErrorsmDeliveryFailureafterMtForwardSMRequest:');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'temp_failed,', '3197015001051,', 'syniverse01', 'smsc-2-eu4,', 'vlr', 'imsi', 'onDialogTimeoutafterMtForwardSMRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9155555555,', 'partial,', '3197015001051,', 'syniverse01', 'smsc-2-eu4,', 'vlr', 'imsi', 'null');".format(r2))
-
-
-                # Route 4 Syniverse 6909 over all 4 SMSC
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'success,', '3197015001053,', 'comfone01', 'smsc-1-eu1,', 'vlr', 'imsi', 'null');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'failed,', '3197015001053,', 'comfone01', 'smsc-1-eu1,', 'vlr', 'imsi', 'onDialogTimeoutafterSRIRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'failed,', '3197015001053,', 'comfone01', 'smsc-1-eu1,', 'vlr', 'imsi', 'ErrorsmDeliveryFailureafterMtForwardSMRequest:');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'temp_failed,', '3197015001053,', 'comfone01', 'smsc-1-eu1,', 'vlr', 'imsi', 'onDialogTimeoutafterMtForwardSMRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'partial,', '3197015001053,', 'comfone01', 'smsc-1-eu1,', 'vlr', 'imsi', 'null');".format(r2))
-
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'success,', '3197015001053,', 'comfone01', 'smsc-2-eu1,', 'vlr', 'imsi', 'null');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'failed,', '3197015001053,', 'comfone01', 'smsc-2-eu1,', 'vlr', 'imsi', 'onDialogTimeoutafterSRIRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'failed,', '3197015001053,', 'comfone01', 'smsc-2-eu1,', 'vlr', 'imsi', 'ErrorsmDeliveryFailureafterMtForwardSMRequest:');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'temp_failed,', '3197015001053,', 'comfone01', 'smsc-2-eu1,', 'vlr', 'imsi', 'onDialogTimeoutafterMtForwardSMRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'partial,', '3197015001053,', 'comfone01', 'smsc-2-eu1,', 'vlr', 'imsi', 'null');".format(r2))
-
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'success,', '3197015001053,', 'comfone01', 'smsc-1-eu4,', 'vlr', 'imsi', 'null');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'failed,', '3197015001053,', 'comfone01', 'smsc-1-eu4,', 'vlr', 'imsi', 'onDialogTimeoutafterSRIRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'failed,', '3197015001053,', 'comfone01', 'smsc-1-eu4,', 'vlr', 'imsi', 'ErrorsmDeliveryFailureafterMtForwardSMRequest:');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'temp_failed,', '3197015001053,', 'comfone01', 'smsc-1-eu4,', 'vlr', 'imsi', 'onDialogTimeoutafterMtForwardSMRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'partial,', '3197015001053,', 'comfone01', 'smsc-1-eu4,', 'vlr', 'imsi', 'null');".format(r2))
-
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'success,', '3197015001053,', 'comfone01', 'smsc-2-eu4,', 'vlr', 'imsi', 'null');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'failed,', '3197015001053,', 'comfone01', 'smsc-2-eu4,', 'vlr', 'imsi', 'onDialogTimeoutafterSRIRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'failed,', '3197015001053,', 'comfone01', 'smsc-2-eu4,', 'vlr', 'imsi', 'ErrorsmDeliveryFailureafterMtForwardSMRequest:');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'temp_failed,', '3197015001053,', 'comfone01', 'smsc-2-eu4,', 'vlr', 'imsi', 'onDialogTimeoutafterMtForwardSMRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '9166666666,', 'partial,', '3197015001053,', 'comfone01', 'smsc-2-eu4,', 'vlr', 'imsi', 'null');".format(r2))
-
-                ## insert test data for new SG
-                # cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '6577777777,', 'success,', '3197015001050,', 'comfone01', 'smsc-2-eu4,', 'vlr', 'imsi', 'null');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '6577777777,', 'failed,', '3197015001050,', 'tata01,', 'smsc-2-eu4,', 'vlr', 'imsi', 'onDialogTimeoutafterSRIRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '6577777777,', 'failed,', '3197015001050,', 'ibasis01', 'smsc-2-eu4,', 'vlr', '52503', 'ErrorsmDeliveryFailureafterMtForwardSMRequest:');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '6577777777,', 'failed,', '3197015001050,', 'bics01', 'smsc-2-eu4,', 'vlr', '52503', 'onDialogTimeoutafterMtForwardSMRequest');".format(r2))
-                cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '6577777777,', 'temp_failed,', '3197015001050,', 'comfone01', 'smsc-2-eu4,', 'vlr', '52505', 'onDialogTimeoutafterMtForwardSMRequest');".format(r2))
-                # cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '6577777777,', 'temp_failed,', '3197015001050,', 'comfone01', 'smsc-2-eu4,', 'vlr', 'imsi', 'onDialogTimeoutafterSRIRequest');".format(r2))
-                # cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '6577777777,', 'partial,', '3197015001050,', 'tatac01', 'smsc-2-eu4,', 'vlr', 'imsi', 'null');".format(r2))
-                #
-                # cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '6588888888,', 'success,', '61491500050,', 'comfone01', 'smsc-2-eu4,', 'vlr', 'imsi', 'null');".format(r2))
-                # cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '6588888888,', 'failed,', '61491500050,', 'tata01', 'smsc-2-eu4,', 'vlr', 'imsi', 'onDialogTimeoutafterSRIRequest');".format(r2))
-                # cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '6588888888,', 'failed,', '61491500050,', 'ibasis01', 'smsc-2-eu4,', 'vlr', '52501', 'ErrorsmDeliveryFailureafterMtForwardSMRequest:');".format(r2))
-                # cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '6588888888,', 'temp_failed,', '61491500050,', 'comfone01', 'smsc-2-eu4,', 'vlr', '52503', 'onDialogTimeoutafterMtForwardSMRequest');".format(r2))
-                # cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '6588888888,', 'temp_failed,', '61491500050,', 'comfone01', 'smsc-2-eu4,', 'vlr', 'imsi', 'onDialogTimeoutafterSRIRequest');".format(r2))
-                # cur.execute("insert into crm_cdrprocess (date, time, msisdn, status, gt, networkid, system, msc, imsi, error_msg) VALUES ('date', '{}', '6588888888,', 'partial,', '61491500050,', 'tatac01', 'smsc-2-eu4,', 'vlr', 'imsi', 'null');".format(r2))
-
                 con.commit()
             cur.close()
 
-    # This part is for FB
-    row1_1a = row1_1.objects.filter(user_id='1a').order_by('time')
-    row1_1b = row1_1.objects.filter(user_id='1b').order_by('time')
-    row1_1c = row1_1.objects.filter(user_id='1c').order_by('time')
-    row1_1d = row1_1.objects.filter(user_id='1d').order_by('time')
-    row1_1e = row1_1.objects.filter(user_id='1e').order_by('time')
 
-    row1_2a = row1_1.objects.filter(user_id='2a').order_by('time')
-    row1_2b = row1_1.objects.filter(user_id='2b').order_by('time')
-    row1_2c = row1_1.objects.filter(user_id='2c').order_by('time')
-    row1_2d = row1_1.objects.filter(user_id='2d').order_by('time')
-    row1_2e = row1_1.objects.filter(user_id='2e').order_by('time')
-
-
-
+    cdrTable_fb_1 = cdrTable.objects.filter(row_id='fb_1').order_by('time')
+    cdrTable_fb_2 = cdrTable.objects.filter(row_id='fb_2').order_by('time')
+    cdrTable_fb_3 = cdrTable.objects.filter(row_id='fb_3').order_by('time')
+    cdrTable_fb_4 = cdrTable.objects.filter(row_id='fb_4').order_by('time')
 
     context = {
-        'row1_1a': row1_1a,
-        'row1_1b': row1_1b,
-        'row1_1c': row1_1c,
-        'row1_1d': row1_1d,
-        'row1_1e': row1_1e,
-        'row1_2a': row1_2a,
-        'row1_2b': row1_2b,
-        'row1_2c': row1_2c,
-        'row1_2d': row1_2d,
-        'row1_2e': row1_2e,
-
+        'cdrTable_fb_1': cdrTable_fb_1,
+        'cdrTable_fb_2': cdrTable_fb_2,
+        'cdrTable_fb_3': cdrTable_fb_3,
+        'cdrTable_fb_4': cdrTable_fb_4,
     }
 
     return render(request, 'crm/fb.html', context )
 
 
-def newSG(request):
 
-    # This part is for new version of SG
-    row1_sg_1a = row1_1.objects.filter(user_id='sg_1a').order_by('time')
-    row1_sg_1b = row1_1.objects.filter(user_id='sg_1b').order_by('time')
-    row1_sg_1c = row1_1.objects.filter(user_id='sg_1c').order_by('time')
-    row1_sg_1d = row1_1.objects.filter(user_id='sg_1d').order_by('time')
-    row1_sg_1e = row1_1.objects.filter(user_id='sg_1e').order_by('time')
-    row1_sg_2a = row1_1.objects.filter(user_id='sg_2a').order_by('time')
-    row1_sg_2b = row1_1.objects.filter(user_id='sg_2b').order_by('time')
-    row1_sg_2c = row1_1.objects.filter(user_id='sg_2c').order_by('time')
-    row1_sg_2d = row1_1.objects.filter(user_id='sg_2d').order_by('time')
 
-    row1_sg_3a = row1_1.objects.filter(user_id='sg_3a').order_by('time')
-    row1_sg_3b = row1_1.objects.filter(user_id='sg_3b').order_by('time')
-    row1_sg_3c = row1_1.objects.filter(user_id='sg_3c').order_by('time')
-    row1_sg_3d = row1_1.objects.filter(user_id='sg_3d').order_by('time')
+def newSGv3(request):
 
-    row1_sg_4a = row1_1.objects.filter(user_id='sg_4a').order_by('time')
-    row1_sg_4b = row1_1.objects.filter(user_id='sg_4b').order_by('time')
-    row1_sg_4c = row1_1.objects.filter(user_id='sg_4c').order_by('time')
-    row1_sg_4d = row1_1.objects.filter(user_id='sg_4d').order_by('time')
-
-    row1_sg_5a = row1_1.objects.filter(user_id='sg_5a').order_by('time')
-    row1_sg_5b = row1_1.objects.filter(user_id='sg_5b').order_by('time')
-    row1_sg_5c = row1_1.objects.filter(user_id='sg_5c').order_by('time')
-    row1_sg_5d = row1_1.objects.filter(user_id='sg_5d').order_by('time')
-
-    row1_sg_6a = row1_1.objects.filter(user_id='sg_6a').order_by('time')
-    row1_sg_6b = row1_1.objects.filter(user_id='sg_6b').order_by('time')
-    row1_sg_6c = row1_1.objects.filter(user_id='sg_6c').order_by('time')
-    row1_sg_6d = row1_1.objects.filter(user_id='sg_6d').order_by('time')
-
-    row1_sg_7a = row1_1.objects.filter(user_id='sg_7a').order_by('time')
-    row1_sg_7b = row1_1.objects.filter(user_id='sg_7b').order_by('time')
-    row1_sg_7c = row1_1.objects.filter(user_id='sg_7c').order_by('time')
-    row1_sg_7d = row1_1.objects.filter(user_id='sg_7d').order_by('time')
-
-    row1_sg_8a = row1_1.objects.filter(user_id='sg_8a').order_by('time')
-    row1_sg_8b = row1_1.objects.filter(user_id='sg_8b').order_by('time')
-    row1_sg_8c = row1_1.objects.filter(user_id='sg_8c').order_by('time')
-    row1_sg_8d = row1_1.objects.filter(user_id='sg_8d').order_by('time')
-
-    row1_sg_9a = row1_1.objects.filter(user_id='sg_9a').order_by('time')
-    row1_sg_9b = row1_1.objects.filter(user_id='sg_9b').order_by('time')
-    row1_sg_9c = row1_1.objects.filter(user_id='sg_9c').order_by('time')
-    row1_sg_9d = row1_1.objects.filter(user_id='sg_9d').order_by('time')
+    cdrTable_sg_10 = cdrTable.objects.filter(row_id='sg_10').order_by('time')
+    cdrTable_sg_11 = cdrTable.objects.filter(row_id='sg_11').order_by('time')
+    cdrTable_sg_12 = cdrTable.objects.filter(row_id='sg_12').order_by('time')
+    cdrTable_sg_13 = cdrTable.objects.filter(row_id='sg_13').order_by('time')
+    cdrTable_sg_14 = cdrTable.objects.filter(row_id='sg_14').order_by('time')
+    cdrTable_sg_15 = cdrTable.objects.filter(row_id='sg_15').order_by('time')
+    cdrTable_sg_16 = cdrTable.objects.filter(row_id='sg_16').order_by('time')
+    cdrTable_sg_17 = cdrTable.objects.filter(row_id='sg_17').order_by('time')
+    cdrTable_sg_18 = cdrTable.objects.filter(row_id='sg_18').order_by('time')
 
 
     context = {
-        'row1_sg_1a': row1_sg_1a,
-        'row1_sg_1b': row1_sg_1b,
-        'row1_sg_1c': row1_sg_1c,
-        'row1_sg_1d': row1_sg_1d,
-        'row1_sg_1e': row1_sg_1e,
-        'row1_sg_2a': row1_sg_2a,
-        'row1_sg_2b': row1_sg_2b,
-        'row1_sg_2c': row1_sg_2c,
-        'row1_sg_2d': row1_sg_2d,
-        'row1_sg_3a': row1_sg_3a,
-        'row1_sg_3b': row1_sg_3b,
-        'row1_sg_3c': row1_sg_3c,
-        'row1_sg_3d': row1_sg_3d,
-        'row1_sg_4a': row1_sg_4a,
-        'row1_sg_4b': row1_sg_4b,
-        'row1_sg_4c': row1_sg_4c,
-        'row1_sg_4d': row1_sg_4d,
-        'row1_sg_5a': row1_sg_5a,
-        'row1_sg_5b': row1_sg_5b,
-        'row1_sg_5c': row1_sg_5c,
-        'row1_sg_5d': row1_sg_5d,
-        'row1_sg_6a': row1_sg_6a,
-        'row1_sg_6b': row1_sg_6b,
-        'row1_sg_6c': row1_sg_6c,
-        'row1_sg_6d': row1_sg_6d,
-        'row1_sg_7a': row1_sg_7a,
-        'row1_sg_7b': row1_sg_7b,
-        'row1_sg_7c': row1_sg_7c,
-        'row1_sg_7d': row1_sg_7d,
-        'row1_sg_8a': row1_sg_8a,
-        'row1_sg_8b': row1_sg_8b,
-        'row1_sg_8c': row1_sg_8c,
-        'row1_sg_8d': row1_sg_8d,
-        'row1_sg_9a': row1_sg_9a,
-        'row1_sg_9b': row1_sg_9b,
-        'row1_sg_9c': row1_sg_9c,
-        'row1_sg_9d': row1_sg_9d,
+        'cdrTable_sg_10': cdrTable_sg_10,
+        'cdrTable_sg_11': cdrTable_sg_11,
+        'cdrTable_sg_12': cdrTable_sg_12,
+        'cdrTable_sg_13': cdrTable_sg_13,
+        'cdrTable_sg_14': cdrTable_sg_14,
+        'cdrTable_sg_15': cdrTable_sg_15,
+        'cdrTable_sg_16': cdrTable_sg_16,
+        'cdrTable_sg_17': cdrTable_sg_17,
+        'cdrTable_sg_18': cdrTable_sg_18,
+
     }
-
-    return render(request, 'crm/newSG.html', context)
-
-
-
+    return render(request, 'crm/newSGv3.html', context)
 
 
 def list2hourv2():
@@ -1847,3 +1073,64 @@ def list2hourv2():
     prod = product(hourlist, min)
 
     return (list(prod))
+
+
+def GenericTotal(mode, gt, time, msisdn, status, db_err_field, system, imsi, networkid, error_msg, tableid):
+
+    con = sqlite3.connect('db.sqlite3')
+    cur = con.cursor()
+    if 'insert' == mode:
+        cur.execute("SELECT count(*) FROM crm_cdrprocess where gt IN ('{}', '{}')  and time like '{}%' and msisdn like '{}%' and status IN ('{}', '{}', '{}')".format(gt[0], gt[1], time, msisdn, status[0], status[1], status[2]))
+        result1 = cur.fetchone()
+        cur.execute("insert into crm_cdrTable (time, total, success, failed1, failed2, failed3, failed4, failed5, failed6, failed7, failed8, row_id) VALUES ('{}', '{}', '', '', '', '', '', '', '', '', '', '{}');".format(time, result1[0], tableid)) # insert total
+        con.commit()
+    elif 'updateSuc' == mode:
+        cur.execute("SELECT count(*) FROM crm_cdrprocess where gt IN ('{}', '{}')  and time like '{}%' and msisdn like '{}%' and status IN ('{}', '{}', '{}')".format(gt[0], gt[1], time, msisdn, status[0], status[1], status[2]))
+        result1 = cur.fetchone()
+        cur.execute("UPDATE crm_cdrTable SET '{}' = '{}' WHERE time like '{}%' and row_id = '{}';".format(db_err_field, result1[0], time, tableid))
+        con.commit()
+    elif 'updateFail' == mode:
+        cur.execute("SELECT count(*) FROM crm_cdrprocess where gt IN ('{}', '{}')  and time like '{}%' and msisdn like '{}%' and status IN ('{}', '{}', '{}')".format(gt[0], gt[1], time, msisdn, status[0], status[1], status[2]))
+        result1 = cur.fetchone()
+        cur.execute("UPDATE crm_cdrTable SET '{}' = '{}' WHERE time like '{}%' and row_id = '{}';".format(db_err_field, result1[0], time, tableid))
+        con.commit()
+    elif 'updateMtFailed' == mode:
+        cur.execute("SELECT count(*) FROM crm_cdrprocess where gt IN ('{}', '{}')  and time like '{}%' and msisdn like '{}%' and error_msg = '{}'".format(gt[0], gt[1], time, msisdn, error_msg))
+        result1 = cur.fetchone()
+        cur.execute("UPDATE crm_cdrTable SET '{}' = '{}' WHERE time like '{}%' and row_id = '{}';".format(db_err_field, result1[0], time, tableid))
+        con.commit()
+    elif 'updateMtFwFailed' == mode:
+        cur.execute("SELECT count(*) FROM crm_cdrprocess where gt IN ('{}', '{}')  and time like '{}%' and msisdn like '{}%' and error_msg = '{}' and imsi like '{}%'".format(gt[0], gt[1], time, msisdn, error_msg, imsi))
+        result1 = cur.fetchone()
+        cur.execute("UPDATE crm_cdrTable SET '{}' = '{}' WHERE time like '{}%' and row_id = '{}';".format(db_err_field, result1[0], time, tableid))
+        con.commit()
+    elif 'insertSriTimeOut' == mode:
+        cur.execute("SELECT count(*) FROM crm_cdrprocess where gt IN ('{}', '{}')  and time like '{}%' and msisdn like '{}%' and networkid IN ('{}', '{}', '{}', '{}', '{}', '{}', '{}') and error_msg = '{}'".format(gt[0], gt[1], time, msisdn, networkid[0], networkid[1], networkid[2], networkid[3], networkid[4], networkid[5], networkid[6], error_msg))
+        result1 = cur.fetchone()
+        cur.execute("insert into crm_cdrTable (time, total, success, failed1, failed2, failed3, failed4, failed5, failed6, failed7, failed8, row_id) VALUES ('{}', '', '', '{}', '', '', '', '', '', '', '', '{}');".format(time, result1[0], tableid))
+        con.commit()
+    elif 'updateSriTimeOut' == mode:
+        cur.execute("SELECT count(*) FROM crm_cdrprocess where gt IN ('{}', '{}')  and time like '{}%' and msisdn like '{}%' and networkid IN ('{}', '{}', '{}', '{}', '{}', '{}', '{}') and error_msg = '{}'".format(gt[0], gt[1], time, msisdn, networkid[0], networkid[1], networkid[2], networkid[3], networkid[4], networkid[5], networkid[6], error_msg))
+        result1 = cur.fetchone()
+        cur.execute("UPDATE crm_cdrTable SET '{}' = '{}' WHERE time like '{}%' and row_id = '{}';".format(db_err_field, result1[0], time, tableid))
+        con.commit()
+    elif 'insertMtFail' == mode:
+        cur.execute("SELECT count(*) FROM crm_cdrprocess where gt IN ('{}', '{}')  and time like '{}%' and msisdn like '{}%' and imsi like '{}%' and networkid IN ('{}', '{}', '{}', '{}', '{}', '{}', '{}') and error_msg = '{}' ".format(gt[0], gt[1], time, msisdn, imsi, networkid[0], networkid[1], networkid[2], networkid[3], networkid[4], networkid[5], networkid[6], error_msg))
+        result1 = cur.fetchone()
+        cur.execute("insert into crm_cdrTable (time, total, success, failed1, failed2, failed3, failed4, failed5, failed6, failed7, failed8, row_id) VALUES ('{}', '', '', '{}', '', '', '', '', '', '', '', '{}');".format(time, result1[0], tableid))
+        con.commit()
+    elif 'updateMtFail' == mode:
+        cur.execute("SELECT count(*) FROM crm_cdrprocess where gt IN ('{}', '{}')  and time like '{}%' and msisdn like '{}%' and imsi like '{}%' and networkid IN ('{}', '{}', '{}', '{}', '{}', '{}', '{}') and error_msg = '{}' ".format(gt[0], gt[1], time, msisdn, imsi, networkid[0], networkid[1], networkid[2], networkid[3], networkid[4], networkid[5], networkid[6], error_msg))
+        result1 = cur.fetchone()
+        cur.execute("UPDATE crm_cdrTable SET '{}' = '{}' WHERE time like '{}%' and row_id = '{}';".format(db_err_field, result1[0], time, tableid))
+        con.commit()
+    elif 'updateMtFailure' == mode:
+        # GenericTotal(updateMtFailure, gt6994, r2, ccfb, statusDummy, 'failed3', system6, networkidDummy, 'onDialogTimeoutafterMtForwardSMRequest', 'fb_1')
+        cur.execute("SELECT count(*) FROM crm_cdrprocess where gt IN ('{}', '{}')  and time like '{}%' and msisdn like '{}%' and system IN ('{}', '{}', '{}', '{}') and error_msg = '{}'".format(gt[0], gt[1], time, msisdn, system[0], system[1], system[2], system[3], error_msg))
+        result1 = cur.fetchone()
+        cur.execute("UPDATE crm_cdrTable SET '{}' = '{}' WHERE time like '{}%' and row_id = '{}';".format(db_err_field, result1[0], time, tableid))
+        con.commit()
+    else:
+        print ("not found")
+
+

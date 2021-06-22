@@ -58,3 +58,14 @@ select * from crm_row1_1 limit 3;
 ``` 
 
 ```
+
+
+
+### Login to DB
+```
+kennyC@dev-instance-eu1-prod:~$ cd django/
+source bin/activate
+cd mysite/
+sqlite3 db.sqlite3
+
+```

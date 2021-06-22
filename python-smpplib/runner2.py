@@ -31,8 +31,8 @@ print (args.textSM)
 logging.basicConfig(level='DEBUG')
 
 # Two parts, UCS2, SMS with UDH
-parts, encoding_flag, msg_type_flag = smpplib.gsm.make_parts(u'n django, is there a way to\n'*10)
-# parts, encoding_flag, msg_type_flag = smpplib.gsm.make_parts(u'{}'.format(args.textSM))
+# parts, encoding_flag, msg_type_flag = smpplib.gsm.make_parts(u'n django, is there a way to\n'*10)
+parts, encoding_flag, msg_type_flag = smpplib.gsm.make_parts(u'{}'.format(args.textSM))
 
 client = smpplib.client.Client('smsc-tip-1-eu4-prod', 12776, allow_unknown_opt_params=True)
 
@@ -53,54 +53,54 @@ for part in parts:
     try:
         while 1:
             if run_once == '1':
-                print ("only sent 1")
+                # print ("only sent 1")
                 pdu = client.send_message(
                     source_addr_ton=smpplib.consts.SMPP_TON_INTL,
                     source_addr_npi=smpplib.consts.SMPP_NPI_ISDN,
                     # Make sure it is a byte string, not unicode:
-                    # source_addr='{}'.format(args.s_id),
-                    source_addr='1008',
+                    source_addr='{}'.format(args.s_id),
+                    # source_addr='1008',
 
                     dest_addr_ton=smpplib.consts.SMPP_TON_INTL,
                     dest_addr_npi=smpplib.consts.SMPP_NPI_ISDN,
                     # Make sure thease two params are byte strings, not unicode:
                     # destination_addr='',
-                    # destination_addr='{}'.format(args.msisdn),
-                    destination_addr='6584684667',
+                    destination_addr='{}'.format(args.msisdn),
+                    # destination_addr='6584684667',
                     short_message=part,
 
                     data_coding=encoding_flag,
                     esm_class=msg_type_flag,
                     registered_delivery=True,
-                    user_message_reference='3197015001050',
-                    # user_message_reference='{}'.format(args.sc),
+                    # user_message_reference='3197015001050',
+                    user_message_reference='{}'.format(args.sc),
                 )
                 print(pdu.sequence)
 
                 run_once = 2
                 break
             elif run_once == '0':
-                print ("Send both SMS")
+                # print ("Send both SMS")
                 pdu = client.send_message(
                     source_addr_ton=smpplib.consts.SMPP_TON_INTL,
                     source_addr_npi=smpplib.consts.SMPP_NPI_ISDN,
                     # Make sure it is a byte string, not unicode:
-                    # source_addr='{}'.format(args.s_id),
-                    source_addr='1008',
+                    source_addr='{}'.format(args.s_id),
+                    # source_addr='1008',
 
                     dest_addr_ton=smpplib.consts.SMPP_TON_INTL,
                     dest_addr_npi=smpplib.consts.SMPP_NPI_ISDN,
                     # Make sure thease two params are byte strings, not unicode:
                     # destination_addr='',
-                    # destination_addr='{}'.format(args.msisdn),
-                    destination_addr='6591016186',
+                    destination_addr='{}'.format(args.msisdn),
+                    # destination_addr='6591016186',
                     short_message=part,
 
                     data_coding=encoding_flag,
                     esm_class=msg_type_flag,
                     registered_delivery=True,
-                    user_message_reference='3197015001050',
-                    # user_message_reference='{}'.format(args.sc),
+                    # user_message_reference='3197015001050',
+                    user_message_reference='{}'.format(args.sc),
                 )
                 print(pdu.sequence)
 

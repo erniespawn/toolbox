@@ -77,5 +77,7 @@ import mymodule
 
 generator = mymodule.PersistentSequenceGenerator()
 client = smpplib.client.Client('example.com', SOMEPORTNUMBER, sequence_generator=generator)
-...
+
+
+(django) kennyC@dev-instance-eu1-prod:~/django/mysite/python-smpplib$ /home/kennyC/django/bin/python3.8 /home/kennyC/django/mysite/python-smpplib/runner.py bics01
 ```

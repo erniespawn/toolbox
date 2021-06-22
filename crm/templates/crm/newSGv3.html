@@ -7,7 +7,7 @@
 
 {% include 'crm/status.html' %}
 <br>
-<h1>SG new version</h1>
+<h1></h1>
 <hr>
 
   <div class="container-fluid">
@@ -32,9 +32,9 @@
                       <th>Failed</th>
                       <th>Success Rate</th>
                   </tr>
-                       {% for 1a in row1_sg_1a %}
+                       {% for sg_10 in cdrTable_sg_10 %}
                   <tr>
-                         <td>{{ 1a.time }}</td>  <td id='' value=''>{{ 1a.total }}</td>  <td id='' value=''>{{ 1a.success }}</td>    <td>{{ 1a.failed }}</td>  <td><span id=successPer_min0_smsc_2_eu4></span></td>
+                         <td>{{ sg_10.time }}</td>  <td id='sg_10.total' value=''>{{ sg_10.total }}</td>  <td id='sg_10.success' value=''>{{ sg_10.success }}</td>    <td>{{ sg_10.failed1 }}</td>  <td><span id=sg_10></span>  </td>
                     </tr>
                        {% endfor %}
                 </table>
@@ -51,9 +51,9 @@
                       <th>Time</th>
                       <th>Timeout</th>
                   </tr>
-                       {% for 1b in row1_sg_1b %}
+                       {% for sg_10 in cdrTable_sg_10 %}
                   <tr>
-                         <td>{{ 1b.time }}</td>  <td id='' value=''>{{ 1b.total }}</td>
+                         <td>{{ sg_10.time }}</td>  <td id='' value=''>{{ sg_10.failed2 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -70,9 +70,9 @@
                         <th>Timeout</th>
                         <th>Sys_Fail</th>
                     </tr>
-                       {% for 1c in row1_sg_1c %}
+                       {% for sg_10 in cdrTable_sg_10 %}
                   <tr>
-                         <td>{{ 1c.time }}</td>  <td id='' value=''>{{ 1c.total }}</td> <td id='' value=''>{{ 1c.failed }}</td>
+                         <td>{{ sg_10.time }}</td>  <td id='' value=''>{{ sg_10.failed3 }}</td> <td id='' value=''>{{ sg_10.failed4}}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -91,9 +91,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 1d in row1_sg_1d %}
+                       {% for sg_10 in cdrTable_sg_10 %}
                   <tr>
-                         <td>{{ 1d.time }}</td>  <td id='' value=''>{{ 1d.total }}</td> <td id='' value=''>{{ 1d.failed }}</td>
+                         <td>{{ sg_10.time }}</td>  <td id='' value=''>{{ sg_10.failed5 }}</td> <td id='' value=''>{{ sg_10.failed6 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -112,9 +112,9 @@
                                 <th>Timeout</th>
                                 <th>Sys_Fail</th>
                            </tr>
-                       {% for 1e in row1_sg_1e %}
+                       {% for sg_10 in cdrTable_sg_10 %}
                   <tr>
-                         <td>{{ 1e.time }}</td>  <td id='' value=''>{{ 1e.total }}</td> <td id='' value=''>{{ 1e.failed }}</td>
+                         <td>{{ sg_10.time }}</td>  <td id='' value=''>{{ sg_10.failed7 }}</td> <td id='' value=''>{{ sg_10.failed8 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -129,7 +129,7 @@
 
 <div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-md-3" style="">Route 6995 GT 3197015001050 Concat SMS</div>
+        <div class="col-md-3" style="">SRI Timeout GT 3197015001050 diff carrier</div>
     </div>
 </div>
 
@@ -144,9 +144,9 @@
                       <th>Time</th>
                       <th>Timeout</th>
                   </tr>
-                       {% for 2a in row1_sg_2a %}
+                       {% for sg_11 in cdrTable_sg_11 %}
                   <tr>
-                         <td>{{ 2a.time }}</td>  <td id='' value=''>{{ 2a.total }}</td>
+                         <td>{{ sg_11.time }}</td>  <td id='' value=''>{{ sg_11.failed1 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -162,9 +162,9 @@
                       <th>Time</th>
                       <th>Timeout</th>
                   </tr>
-                       {% for 2b in row1_sg_2b %}
+                       {% for sg_11 in cdrTable_sg_11 %}
                   <tr>
-                         <td>{{ 2b.time }}</td>  <td id='' value=''>{{ 2b.total }}</td>
+                         <td>{{ sg_11.time }}</td>  <td id='' value=''>{{ sg_11.failed2 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -180,9 +180,9 @@
                       <th>Time</th>
                       <th>Timeout</th>
                   </tr>
-                       {% for 2c in row1_sg_2c %}
+                       {% for sg_11 in cdrTable_sg_11 %}
                   <tr>
-                         <td>{{ 2c.time }}</td>  <td id='' value=''>{{ 2c.total }}</td>
+                         <td>{{ sg_11.time }}</td>  <td id='' value=''>{{ sg_11.failed3 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -198,9 +198,9 @@
                       <th>Time</th>
                       <th>Timeout</th>
                   </tr>
-                       {% for 2d in row1_sg_2d %}
+                       {% for sg_11 in cdrTable_sg_11 %}
                   <tr>
-                         <td>{{ 2d.time }}</td>  <td id='' value=''>{{ 2d.total }}</td>
+                         <td>{{ sg_11.time }}</td>  <td id='' value=''>{{ sg_11.failed4 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -209,7 +209,13 @@
 </div>
 <hr>
 <br>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-3" style="">SRI Timeout GT 61491500050 diff carrier</div>
+    </div>
+</div>
 <br>
+
 
 <div class="row">
         <div class="col-md-3">
@@ -221,9 +227,9 @@
                       <th>Time</th>
                       <th>Timeout</th>
                   </tr>
-                       {% for 3a in row1_sg_3a %}
+                       {% for sg_12 in cdrTable_sg_12 %}
                   <tr>
-                         <td>{{ 3a.time }}</td>  <td id='' value=''>{{ 3a.total }}</td>
+                         <td>{{ sg_12.time }}</td>  <td id='' value=''>{{ sg_12.failed1 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -239,9 +245,9 @@
                       <th>Time</th>
                       <th>Timeout</th>
                   </tr>
-                       {% for 3b in row1_sg_3b %}
+                       {% for sg_12 in cdrTable_sg_12 %}
                   <tr>
-                         <td>{{ 3b.time }}</td>  <td id='' value=''>{{ 3b.total }}</td>
+                         <td>{{ sg_12.time }}</td>  <td id='' value=''>{{ sg_12.failed2 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -257,9 +263,9 @@
                       <th>Time</th>
                       <th>Timeout</th>
                   </tr>
-                       {% for 3c in row1_sg_3c %}
+                       {% for sg_12 in cdrTable_sg_12 %}
                   <tr>
-                         <td>{{ 3c.time }}</td>  <td id='' value=''>{{ 3c.total }}</td>
+                         <td>{{ sg_12.time }}</td>  <td id='' value=''>{{ sg_12.failed3 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -275,9 +281,9 @@
                       <th>Time</th>
                       <th>Timeout</th>
                   </tr>
-                       {% for 3d in row1_sg_3d %}
+                       {% for sg_12 in cdrTable_sg_12 %}
                   <tr>
-                         <td>{{ 3d.time }}</td>  <td id='' value=''>{{ 3d.total }}</td>
+                         <td>{{ sg_12.time }}</td>  <td id='' value=''>{{ sg_12.failed4 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -286,6 +292,14 @@
 </div>
 
 
+<hr>
+<br>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-3" style="">FWSM Timeout GT 3197015001050 diff carrier</div>
+    </div>
+</div>
+<br>
 
 <div class="row">
     <div class="col-md-3">
@@ -298,9 +312,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 4a in row1_sg_4a %}
+                       {% for sg_13 in cdrTable_sg_13 %}
                   <tr>
-                         <td>{{ 4a.time }}</td>  <td id='' value=''>{{ 4a.total }}</td> <td id='' value=''>{{ 4a.failed }}</td>
+                         <td>{{ sg_13.time }}</td>  <td id='' value=''>{{ sg_13.failed1 }}</td> <td id='' value=''>{{ sg_13.failed2 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -318,9 +332,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 4b in row1_sg_4b %}
+                       {% for sg_13 in cdrTable_sg_13 %}
                   <tr>
-                         <td>{{ 4b.time }}</td>  <td id='' value=''>{{ 4b.total }}</td> <td id='' value=''>{{ 4b.failed }}</td>
+                         <td>{{ sg_13.time }}</td>  <td id='' value=''>{{ sg_13.failed3 }}</td> <td id='' value=''>{{ sg_13.failed4 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -337,9 +351,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 4c in row1_sg_4c %}
+                       {% for sg_13 in cdrTable_sg_13 %}
                   <tr>
-                         <td>{{ 4c.time }}</td>  <td id='' value=''>{{ 4c.total }}</td> <td id='' value=''>{{ 4c.failed }}</td>
+                         <td>{{ sg_13.time }}</td>  <td id='' value=''>{{ sg_13.failed5 }}</td> <td id='' value=''>{{ sg_13.failed6 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -356,9 +370,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 4d in row1_sg_4d %}
+                       {% for sg_13 in cdrTable_sg_13 %}
                   <tr>
-                         <td>{{ 4d.time }}</td>  <td id='' value=''>{{ 4d.total }}</td> <td id='' value=''>{{ 4d.failed }}</td>
+                         <td>{{ sg_13.time }}</td>  <td id='' value=''>{{ sg_13.failed7 }}</td> <td id='' value=''>{{ sg_13.failed8 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -366,7 +380,14 @@
     </div>
 </div>
 
-
+<hr>
+<br>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-3" style="">FWSM Timeout GT 61491500050 diff carrier</div>
+    </div>
+</div>
+<br>
 
 <div class="row">
     <div class="col-md-3">
@@ -379,9 +400,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 5a in row1_sg_5a %}
+                       {% for sg_14 in cdrTable_sg_14 %}
                   <tr>
-                         <td>{{ 5a.time }}</td>  <td id='' value=''>{{ 5a.total }}</td> <td id='' value=''>{{ 5a.failed }}</td>
+                         <td>{{ sg_14.time }}</td>  <td id='' value=''>{{ sg_14.failed1 }}</td> <td id='' value=''>{{ sg_14.failed2 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -399,9 +420,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 5b in row1_sg_5b %}
+                       {% for sg_14 in cdrTable_sg_14 %}
                   <tr>
-                         <td>{{ 5b.time }}</td>  <td id='' value=''>{{ 5b.total }}</td> <td id='' value=''>{{ 5b.failed }}</td>
+                         <td>{{ sg_14.time }}</td>  <td id='' value=''>{{ sg_14.failed3 }}</td> <td id='' value=''>{{ sg_14.failed4 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -418,9 +439,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 5c in row1_sg_5c %}
+                       {% for sg_14 in cdrTable_sg_14 %}
                   <tr>
-                         <td>{{ 5c.time }}</td>  <td id='' value=''>{{ 5c.total }}</td> <td id='' value=''>{{ 5c.failed }}</td>
+                         <td>{{ sg_14.time }}</td>  <td id='' value=''>{{ sg_14.failed5 }}</td> <td id='' value=''>{{ sg_14.failed6 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -438,9 +459,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 5d in row1_sg_5d %}
+                       {% for sg_14 in cdrTable_sg_14 %}
                   <tr>
-                         <td>{{ 5d.time }}</td>  <td id='' value=''>{{ 5d.total }}</td> <td id='' value=''>{{ 5d.failed }}</td>
+                         <td>{{ sg_14.time }}</td>  <td id='' value=''>{{ sg_14.failed7 }}</td> <td id='' value=''>{{ sg_14.failed8 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -449,7 +470,14 @@
 </div>
 
 
-
+<hr>
+<br>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-3" style="">FWSM Timeout GT 3197015001050 diff carrier</div>
+    </div>
+</div>
+<br>
 
 <div class="row">
     <div class="col-md-3">
@@ -462,9 +490,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 6a in row1_sg_6a %}
+                       {% for sg_15 in cdrTable_sg_15 %}
                   <tr>
-                         <td>{{ 6a.time }}</td>  <td id='' value=''>{{ 6a.total }}</td> <td id='' value=''>{{ 6a.failed }}</td>
+                         <td>{{ sg_15.time }}</td>  <td id='' value=''>{{ sg_15.failed1 }}</td> <td id='' value=''>{{ sg_15.failed2 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -482,9 +510,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 6b in row1_sg_6b %}
+                       {% for sg_15 in cdrTable_sg_15 %}
                   <tr>
-                         <td>{{ 6b.time }}</td>  <td id='' value=''>{{ 6b.total }}</td> <td id='' value=''>{{ 6b.failed }}</td>
+                         <td>{{ sg_15.time }}</td>  <td id='' value=''>{{ sg_15.failed3 }}</td> <td id='' value=''>{{ sg_15.failed4 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -501,9 +529,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 6c in row1_sg_6c %}
+                       {% for sg_15 in cdrTable_sg_15 %}
                   <tr>
-                         <td>{{ 6c.time }}</td>  <td id='' value=''>{{ 6c.total }}</td> <td id='' value=''>{{ 6c.failed }}</td>
+                         <td>{{ sg_15.time }}</td>  <td id='' value=''>{{ sg_15.failed5 }}</td> <td id='' value=''>{{ sg_15.failed6 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -520,9 +548,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 6d in row1_sg_6d %}
+                       {% for sg_15 in cdrTable_sg_15 %}
                   <tr>
-                         <td>{{ 6d.time }}</td>  <td id='' value=''>{{ 6d.total }}</td> <td id='' value=''>{{ 6d.failed }}</td>
+                         <td>{{ sg_15.time }}</td>  <td id='' value=''>{{ sg_15.failed7 }}</td> <td id='' value=''>{{ sg_15.failed8 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -532,6 +560,15 @@
 
 
 
+<br>
+
+<hr>
+<br>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-3" style="">FWSM Timeout GT 61491500050 diff carrier</div>
+    </div>
+</div>
 <br>
 
 <div class="row">
@@ -545,9 +582,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 7a in row1_sg_7a %}
+                       {% for sg_16 in cdrTable_sg_16 %}
                   <tr>
-                         <td>{{ 7a.time }}</td>  <td id='' value=''>{{ 7a.total }}</td> <td id='' value=''>{{ 7a.failed }}</td>
+                         <td>{{ sg_16.time }}</td>  <td id='' value=''>{{ sg_16.failed1 }}</td> <td id='' value=''>{{ sg_16.failed2 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -565,9 +602,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 7b in row1_sg_7b %}
+                       {% for sg_16 in cdrTable_sg_16 %}
                   <tr>
-                         <td>{{ 7b.time }}</td>  <td id='' value=''>{{ 7b.total }}</td> <td id='' value=''>{{ 7b.failed }}</td>
+                         <td>{{ sg_16.time }}</td>  <td id='' value=''>{{ sg_16.failed3 }}</td> <td id='' value=''>{{ sg_16.failed4 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -584,12 +621,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                      <th>Time</th>
-                      <th>Timeout</th>
-                  </tr>
-                       {% for 7c in row1_sg_7c %}
+                       {% for sg_16 in cdrTable_sg_16 %}
                   <tr>
-                         <td>{{ 7c.time }}</td>  <td id='' value=''>{{ 7c.total }}</td> <td id='' value=''>{{ 7c.failed }}</td>
+                         <td>{{ sg_16.time }}</td>  <td id='' value=''>{{ sg_16.failed5 }}</td> <td id='' value=''>{{ sg_16.failed6 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -607,9 +641,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 7d in row1_sg_7d %}
+                       {% for sg_16 in cdrTable_sg_16 %}
                   <tr>
-                         <td>{{ 7d.time }}</td>  <td id='' value=''>{{ 7d.total }}</td> <td id='' value=''>{{ 7d.failed }}</td>
+                         <td>{{ sg_16.time }}</td>  <td id='' value=''>{{ sg_16.failed7 }}</td> <td id='' value=''>{{ sg_16.failed8 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -619,7 +653,14 @@
 </div>
 
 
-
+<hr>
+<br>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-3" style="">FWSM Timeout GT 3197015001050 diff carrier</div>
+    </div>
+</div>
+<br>
 
 <div class="row">
     <div class="col-md-3">
@@ -632,9 +673,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 8a in row1_sg_8a %}
+                       {% for sg_17 in cdrTable_sg_17 %}
                   <tr>
-                         <td>{{ 8a.time }}</td>  <td id='' value=''>{{ 8a.total }}</td> <td id='' value=''>{{ 8a.failed }}</td>
+                         <td>{{ sg_17.time }}</td>  <td id='' value=''>{{ sg_17.failed1 }}</td> <td id='' value=''>{{ sg_17.failed2 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -652,9 +693,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 8b in row1_sg_8b %}
+                       {% for sg_17 in cdrTable_sg_17 %}
                   <tr>
-                         <td>{{ 8b.time }}</td>  <td id='' value=''>{{ 8b.total }}</td> <td id='' value=''>{{ 8b.failed }}</td>
+                         <td>{{ sg_17.time }}</td>  <td id='' value=''>{{ sg_17.failed3 }}</td> <td id='' value=''>{{ sg_17.failed4 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -671,9 +712,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 8c in row1_sg_8c %}
+                       {% for sg_17 in cdrTable_sg_17 %}
                   <tr>
-                         <td>{{ 8c.time }}</td>  <td id='' value=''>{{ 8c.total }}</td> <td id='' value=''>{{ 8c.failed }}</td>
+                         <td>{{ sg_17.time }}</td>  <td id='' value=''>{{ sg_17.failed5 }}</td> <td id='' value=''>{{ sg_17.failed6 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -690,9 +731,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 8d in row1_sg_8d %}
+                       {% for sg_17 in cdrTable_sg_17 %}
                   <tr>
-                         <td>{{ 8d.time }}</td>  <td id='' value=''>{{ 8d.total }}</td> <td id='' value=''>{{ 8d.failed }}</td>
+                         <td>{{ sg_17.time }}</td>  <td id='' value=''>{{ sg_17.failed7 }}</td> <td id='' value=''>{{ sg_17.failed8 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -702,7 +743,13 @@
 
 
 
-
+<hr>
+<br>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-3" style="">FWSM Timeout GT 61491500050 diff carrier</div>
+    </div>
+</div>
 <br>
 
 <div class="row">
@@ -716,9 +763,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 9a in row1_sg_9a %}
+                       {% for sg_18 in cdrTable_sg_18 %}
                   <tr>
-                         <td>{{ 9a.time }}</td>  <td id='' value=''>{{ 9a.total }}</td> <td id='' value=''>{{ 9a.failed }}</td>
+                         <td>{{ sg_18.time }}</td>  <td id='' value=''>{{ sg_18.failed1 }}</td> <td id='' value=''>{{ sg_18.failed2 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -736,9 +783,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 9b in row1_sg_9b %}
+                       {% for sg_18 in cdrTable_sg_18 %}
                   <tr>
-                         <td>{{ 9b.time }}</td>  <td id='' value=''>{{ 9b.total }}</td> <td id='' value=''>{{ 9bb.failed }}</td>
+                         <td>{{ sg_18.time }}</td>  <td id='' value=''>{{ sg_18.failed3 }}</td> <td id='' value=''>{{ sg_18.failed4 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -755,9 +802,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 9c in row1_sg_9c %}
+                       {% for sg_18 in cdrTable_sg_18 %}
                   <tr>
-                         <td>{{ 9c.time }}</td>  <td id='' value=''>{{ 9c.total }}</td> <td id='' value=''>{{ 9c.failed }}</td>
+                         <td>{{ sg_18.time }}</td>  <td id='' value=''>{{ sg_18.failed5 }}</td> <td id='' value=''>{{ sg_18.failed6 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -774,9 +821,9 @@
                             <th>Timeout</th>
                             <th>Sys_Fail</th>
                         </tr>
-                       {% for 9d in row1_sg_9d %}
+                       {% for sg_18 in cdrTable_sg_18 %}
                   <tr>
-                         <td>{{ 9d.time }}</td>  <td id='' value=''>{{ 9d.total }}</td> <td id='' value=''>{{ 9d.failed }}</td>
+                         <td>{{ sg_18.time }}</td>  <td id='' value=''>{{ sg_18.failed7 }}</td> <td id='' value=''>{{ sg_18.failed8 }}</td>
                     </tr>
                        {% endfor %}
               </table>
@@ -789,9 +836,6 @@
 
 
 
-
-
-{% include 'crm/jquery.html' %}
 
 
 {% endblock  %}

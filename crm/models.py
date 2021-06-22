@@ -75,3 +75,20 @@ class row1_1(models.Model):
     def __str__(self):
         return "{}, {}, {}, {}, {}".format(self.time, self.total, self.success, self.failed, self.user_id)
 
+class cdrTable(models.Model):
+    time = models.CharField(max_length=200, null=True)
+    total = models.CharField(max_length=200, null=True)
+    success = models.CharField(max_length=200, null=True)
+    failed1 = models.CharField(max_length=200, null=True)
+    failed2 = models.CharField(max_length=200, null=True)
+    failed3 = models.CharField(max_length=200, null=True)
+    failed4 = models.CharField(max_length=200, null=True)
+    failed5 = models.CharField(max_length=200, null=True)
+    failed6 = models.CharField(max_length=200, null=True)
+    failed7 = models.CharField(max_length=200, null=True)
+    failed8 = models.CharField(max_length=200, null=True)
+    row_id = models.CharField(max_length=200, null=True)
+
+    def __str__(self):
+        return "{}, {}, {}, {}, {}, {}, {}, {}, {}, {}".format(self.time, self.total, self.success, self.failed1, self.failed2, self.failed3, self.failed4, self.failed5, self.failed6, self.failed7, self.failed8, self.row_id)
+

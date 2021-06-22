@@ -21,5 +21,6 @@ urlpatterns = [
     path('fb/', views.fb, name='fb'),
     path('ss7hub/', views.ss7hub, name='ss7hub'),
     path('srilookup/', views.srilookup, name='srilookup'),
-    path('newSG/', views.newSG, name='newSG'),
+    # path('newSG/', views.newSG, name='newSG'),
+    path('newSGv3/', views.newSGv3, name='newSGv3'),
 ]

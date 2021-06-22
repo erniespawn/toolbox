@@ -302,6 +302,13 @@ manage.py
 polls/migrations/
 crm/migrations/
 static/polls/migrations/
+toolbox/crm/migrations/__pycache__/
+toolbox/crm/__pycache__/
+static/toolbox/mysite/__pycache__/
+static/toolbox/crm/__pycache__/
+python-smpplib/smpplib/__pycache__/
+toolbox/mysite/__pycache__/
+static/toolbox/crm/migrations/__pycache__/
 
 # Folder config file
 [Dd]esktop.ini
